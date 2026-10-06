@@ -1,0 +1,34 @@
+# Sedimentation simulation of N=12 shell rigid body (FREE FALL, NO WALL)
+# Conforming strictly to RigidMultiblobsWall/doc/README.md
+
+# Integrator scheme (2nd order Adams-Bashforth)
+scheme                                   deterministic_adams_bashforth
+domain                                   no_wall
+
+# Hydrodynamic mobility implementation (python_no_wall)
+mobility_blobs_implementation            python_no_wall
+mobility_vector_prod_implementation      python_no_wall
+blob_blob_force_implementation           None
+
+# Time stepping
+dt                                       0.05
+n_steps                                  50
+n_save                                   1
+
+# Fluid viscosity and gravity
+eta                                      1.0
+g                                        1.0
+blob_radius                              0.25
+
+# Steric repulsion parameters
+repulsion_strength                       0.0
+debye_length                             1.0
+repulsion_strength_wall                  0.0
+debye_length_wall                        1.0
+
+# Output configuration
+save_clones                              one_file
+output_name                              C:/MTP-oct/simulations/shell_free_fall_single/shell_free_fall
+
+# Rigid body structure
+structure C:/MTP-oct/RigidMultiblobsWall/multi_bodies/Structures/shell_N_12_Rg_1_Rh_1_2625.vertex C:/MTP-oct/simulations/shell_free_fall_single/shell_N_12_single.clones

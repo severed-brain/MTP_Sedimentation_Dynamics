@@ -1,0 +1,33 @@
+# Sedimentation simulation of N=12 shell rigid body near a wall
+# Conforming strictly to RigidMultiblobsWall/doc/README.md
+
+# Integrator scheme (2nd order Adams-Bashforth)
+scheme                                   deterministic_adams_bashforth
+
+# RPB wall-corrected mobility formulation
+mobility_blobs_implementation            python
+mobility_vector_prod_implementation      python
+blob_blob_force_implementation           python
+
+# Time stepping
+dt                                       0.05
+n_steps                                  50
+n_save                                   1
+
+# Fluid viscosity and gravity
+eta                                      1.0
+g                                        1.0
+blob_radius                              0.25
+
+# Steric repulsion parameters
+repulsion_strength                       1.0
+debye_length                             0.5
+repulsion_strength_wall                  5.0
+debye_length_wall                        0.5
+
+# Output configuration
+save_clones                              one_file
+output_name                              C:/MTP-oct/simulations/single_shell_sedimentation/shell_sedimentation
+
+# Rigid body structure
+structure C:/MTP-oct/RigidMultiblobsWall/multi_bodies/Structures/shell_N_12_Rg_1_Rh_1_2625.vertex C:/MTP-oct/simulations/single_shell_sedimentation/shell_N_12_single.clones

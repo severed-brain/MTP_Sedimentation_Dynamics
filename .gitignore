@@ -1,0 +1,34 @@
+# Byte-compiled / optimized files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C / Fortran / shared objects
+*.o
+*.mod
+*.so
+*.dylib
+*.dll
+*.exe
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Editor / OS files
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+Thumbs.db
+
+# RMBW trajectory frame dumps
+*.config
+
+# Scratch / agent temporary files
+scratch/
+*.git_backup*

@@ -1,0 +1,8 @@
+# Free space body mobility for N=12 shell
+scheme body_mobility
+mobility_blobs_implementation python_no_wall
+mobility_vector_prod_implementation python_no_wall
+eta 1.0
+blob_radius 0.25
+output_name c:/MTP-oct/simulations/free_fall_test/shell_free_mobility
+structure c:/MTP-oct/RigidMultiblobsWall/multi_bodies/Structures/shell_N_12_Rg_1_Rh_1_2625.vertex c:/MTP-oct/RigidMultiblobsWall/multi_bodies/Structures/shell_N_12_Rg_1.clones
