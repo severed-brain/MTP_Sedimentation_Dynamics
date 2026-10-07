@@ -1,0 +1,6 @@
+# The format is:
+# number of rigid bodies
+# vector_location_body_0  quaternion_body_0
+# .
+1
+0	0	5	1	0	0	0

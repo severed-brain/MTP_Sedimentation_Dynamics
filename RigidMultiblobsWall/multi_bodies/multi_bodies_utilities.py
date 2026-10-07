@@ -20,6 +20,7 @@ except ImportError:
   print('numba not found')
 
 # Find project functions
+sys.path.append('../')
 found_functions = False
 path_to_append = ''
 while found_functions is False:

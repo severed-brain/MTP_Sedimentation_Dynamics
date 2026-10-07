@@ -9,11 +9,9 @@ except ImportError:
 
 # Try to import the visit_writer (boost implementation)
 try:
-  # import visit.visit_writer as visit_writer
   from visit import visit_writer as visit_writer
-except ImportError as e:
-  print(e)
-  pass
+except ImportError:
+  visit_writer = None
 
 def plot_velocity_field(grid, r_vectors_blobs, lambda_blobs, blob_radius, eta, output, tracer_radius, radius_source = None, frame_body = None, *args, **kwargs):
   '''

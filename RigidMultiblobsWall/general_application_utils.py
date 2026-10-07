@@ -593,9 +593,17 @@ def gmres(A, b, x0=None, tol=1e-05, restart=None, maxiter=None, xtype=None, M=No
   M = spla.LinearOperator((n, n), M_x)
   '''
 
+  def _call_scspla_gmres(A_op, b_vec, **kwargs):
+    try:
+      return scspla.gmres(A_op, b_vec, **kwargs)
+    except TypeError:
+      if 'tol' in kwargs:
+        kwargs['rtol'] = kwargs.pop('tol')
+      return scspla.gmres(A_op, b_vec, **kwargs)
+
   # If left preconditioner (or no Preconditioner) just call scipy gmres
   if PC_side == 'left' or M is None:
-    return scspla.gmres(A, b, M=M, x0=x0, tol=tol, atol=0, maxiter=maxiter, restart=restart, callback=callback)    
+    return _call_scspla_gmres(A, b, M=M, x0=x0, tol=tol, atol=0, maxiter=maxiter, restart=restart, callback=callback)    
 
   # Create LinearOperator for A and P^{-1}
   A_LO = scspla.aslinearoperator(A)
@@ -624,7 +632,7 @@ def gmres(A, b, x0=None, tol=1e-05, restart=None, maxiter=None, xtype=None, M=No
     b = M.matvec(b)
   
   # Solve system A_new * x = b
-  (x, info) = scspla.gmres(A_partial_LO, b, x0=None, tol=tol, atol=0, maxiter=maxiter, restart=restart, callback=callback) 
+  (x, info) = _call_scspla_gmres(A_partial_LO, b, x0=None, tol=tol, atol=0, maxiter=maxiter, restart=restart, callback=callback) 
 
   # Modify solution
   if PC_side == 'right':

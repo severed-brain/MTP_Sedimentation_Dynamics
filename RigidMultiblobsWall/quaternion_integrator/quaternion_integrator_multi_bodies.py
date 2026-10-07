@@ -13,10 +13,16 @@ import general_application_utils as utils
 
 try:
   from quaternion import Quaternion
-  import gmres 
 except ImportError:
   from quaternion_integrator.quaternion import Quaternion
-  from quaternion_integrator import gmres 
+
+try:
+  import gmres 
+except Exception:
+  try:
+    from quaternion_integrator import gmres 
+  except Exception:
+    gmres = None 
 
 
 class QuaternionIntegrator(object):

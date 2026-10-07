@@ -108,8 +108,31 @@ structure Structures/shell_N_<N>_...vertex Structures/shell_N_12_Rg_1.clones
 
 ---
 
-## 6. Next Steps for Continuing the Project
+## 6. Custom Simulations & Best Practices
 
+To maintain integrity, **never modify the `RigidMultiblobsWall/` core repository.** Treat it as a read-only source of truth. All custom tests and new shape experiments should be isolated in a separate `custom_simulations/` directory.
+
+### Directory Structure for Custom Tests
+Organize your custom tests by shape and blob resolution ($N$):
+```text
+custom_simulations/
+└── <shape_name>/ (e.g., shell, cylinder, boomerang)
+    └── N_<size>/ (e.g., N_162)
+        ├── data/                         # Simulation output goes here
+        ├── input.dat                     # The master configuration script
+        ├── single_body.clones            # Map of positions (1 body)
+        └── my_custom_shape.vertex        # Geometry blueprint
+```
+
+### The Three Essential Files
+Every rigid body simulation requires exactly three files:
+1. **`.vertex` (The Blueprint):** Defines the shape of a single object by listing the $X, Y, Z$ coordinates of every blob that makes it up. The first line specifies the number of blobs $N$.
+2. **`.clones` (The Map):** Defines **how many** bodies are in the fluid and **where** they start (Center of Mass $X, Y, Z$ and quaternions). It is completely independent of $N$. E.g., a file starting with `1` places exactly 1 body.
+3. **`.dat` (The Master Script):** The configuration file executed by the physics engine. It sets all physical parameters (viscosity, time steps, blob radius) and uses the `structure` line at the bottom to glue the `.vertex` and `.clones` files together. Always copy parameters exactly from the source-of-truth repo without assuming new physics values.
+
+---
+
+## 7. Next Steps for Continuing the Project
 1. **Near-Wall vs. Free-Fall Comparison**: Run the same series with `domain single_wall` to show wall drag slowing down sedimentation.
 2. **Brownian Dynamics**: Set `kT > 0` and scheme to `stochastic_Slip_Trapz` to observe diffusion alongside sedimentation.
 3. **Articulated Bodies**: Reference `multi_bodies/examples/bacteria` to link bodies with passive/active joint constraints (`.const`).
