@@ -7,12 +7,12 @@ dt                                       0.05
 n_steps                                  20
 n_save                                   1
 eta                                      1.0
-g                                        6.172839506172839
+g                                        18.51851851851852
 blob_radius                              0.1393
 repulsion_strength                       0.0
 debye_length                             1.0
 repulsion_strength_wall                  0.0
 debye_length_wall                        1.0
 save_clones                              one_file
-output_name                              data/shell_N_162_F_1000
-structure shell_N_162_Rg_1_Rh_1_0530.vertex single_body.clones  
+output_name                              data/prolate_N_162_F_3000
+structure ellipsoid_prolate_N_162.vertex single_body.clones

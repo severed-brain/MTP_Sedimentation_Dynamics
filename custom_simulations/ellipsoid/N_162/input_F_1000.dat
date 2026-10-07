@@ -14,5 +14,5 @@ debye_length                             1.0
 repulsion_strength_wall                  0.0
 debye_length_wall                        1.0
 save_clones                              one_file
-output_name                              data/shell_N_162_F_1000
-structure shell_N_162_Rg_1_Rh_1_0530.vertex single_body.clones  
+output_name                              data/prolate_N_162_F_1000
+structure ellipsoid_prolate_N_162.vertex single_body.clones
