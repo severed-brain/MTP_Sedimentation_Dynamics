@@ -1,0 +1,18 @@
+scheme                                   deterministic_adams_bashforth
+domain                                   no_wall
+mobility_blobs_implementation            python_no_wall
+mobility_vector_prod_implementation      python_no_wall
+blob_blob_force_implementation           None
+dt                                       0.05
+n_steps                                  30
+n_save                                   1
+eta                                      1.0
+g                                        12.345679012345679
+blob_radius                              0.2293
+repulsion_strength                       0.0
+debye_length                             1.0
+repulsion_strength_wall                  0.0
+debye_length_wall                        1.0
+save_clones                              one_file
+output_name                              data/end_on_0.3
+structure end_on_0.3.vertex single_body.clones
