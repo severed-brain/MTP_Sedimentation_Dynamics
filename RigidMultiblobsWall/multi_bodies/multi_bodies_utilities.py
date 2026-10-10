@@ -13,6 +13,7 @@ import subprocess
 from functools import partial
 import sys
 import time
+from shutil import copyfile
 # Try to import numba
 try:
   from numba import njit, prange
@@ -274,7 +275,8 @@ if __name__ ==  '__main__':
   read = read_input.ReadInput(input_file)
 
   # Copy input file to output
-  subprocess.call(["cp", input_file, read.output_name + '.inputfile'])
+  # subprocess.call(["cp", input_file, read.output_name + '.inputfile'])
+  copyfile(input_file, read.output_name + '.inputfile')
 
   # Create rigid bodies
   bodies = []
