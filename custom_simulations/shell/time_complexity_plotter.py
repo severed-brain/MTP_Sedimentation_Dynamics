@@ -9,7 +9,7 @@ import math
 Ns = [12, 42, 162, 642, 2562]
 base_dir = r"d:\sedimentation_dynamics"
 multi_bodies_dir = os.path.join(base_dir, "RigidMultiblobsWall", "multi_bodies")
-custom_dir = os.path.join(base_dir, "custom_simulations", "shell")
+custom_dir = os.path.join(base_dir, "custom_simulations", "shell", "adams_bashforth")
 
 vertex_files = {
     12: "shell_N_12_Rg_1_Rh_1_2625.vertex",
@@ -26,7 +26,7 @@ execution_times = []
 
 # We will run exactly 5 time steps for every N to make it a perfectly fair comparison
 steps = 5 
-F = 1000.0
+F = 100
 
 for N in Ns:
     n_dir = os.path.join(custom_dir, f"N_{N}")
