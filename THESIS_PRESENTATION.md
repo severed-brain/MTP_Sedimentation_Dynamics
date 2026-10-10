@@ -162,7 +162,32 @@ python custom_simulations/ellipsoid_angles/plot_angle_drift.py
 
 ---
 
-## Slide 8: Literature Benchmark Replication (Phys. Rev. E 109, 065302)
+## Slide 8: Multi-Body Pair Sedimentation Dynamics ($d/R \in \{2, 4, 6, 8, 10\}$)
+
+### Dynamic Trajectories via Forward Euler Integration
+While single bodies reach a steady speed instantaneously, multiple bodies interact hydrodynamically through long-range Stokeslet disturbances. We simulated and plotted trajectories for particle pairs across initial separation ratios $d/R \in \{2, 4, 6, 8, 10\}$ using explicit Forward Euler time-stepping.
+
+| Spherical Shell Pairs | Master Interaction Decay Across Geometries |
+| :---: | :---: |
+| ![Sphere Pair Trajectories](custom_simulations/multi_body/plots/sphere_pair_trajectories.png) | ![Summary Interaction Scaling](custom_simulations/multi_body/plots/summary_pair_interaction_scaling.png) |
+
+### Key Multi-Body Findings:
+1. **Cooperative Velocity Enhancement:** At near-contact ($d/R = 2$), pairs sediment $\sim 25\% - 35\%$ faster than an isolated body due to mutual drafting.
+2. **Stokeslet Decay Scaling:** Velocity enhancement asymptotically decays as $1 + \frac{3}{4}\frac{R}{d}$ with increasing separation $d/R \to 10$.
+3. **Shape & Orientation Coupling:**
+   * **Ellipsoids ($\theta = 0^\circ, 45^\circ, 90^\circ$):** Inclined pairs ($\theta = 45^\circ$) undergo simultaneous vertical drafting and lateral trajectory drift.
+   * **Discs & Cylinders:** Slender cylinders exhibit slower interaction decay than compact discs and spheres.
+   * **Boomerangs ($\Delta \phi = 0^\circ \to 180^\circ$):** Asymmetric chirality couples mutual translation to spontaneous in-plane rotation and trajectory divergence.
+
+**Reproduce via:**
+```bash
+python custom_simulations/multi_body/run_multi_body_simulations.py --workers 8
+python custom_simulations/multi_body/plot_multi_body_trajectories.py
+```
+
+---
+
+## Slide 9: Literature Benchmark Replication (Phys. Rev. E 109, 065302)
 
 ### Figure 3 Replication
 Comparison of sedimentation velocity ratio between **broad-side** and **end-on** orientations across aspect ratios $e = b/a \in [0.3, 1.0]$:
@@ -179,7 +204,7 @@ python custom_simulations/fig3_replication/plot_fig3.py
 
 ---
 
-## Slide 9: Conclusions & Future Research Directions
+## Slide 10: Conclusions & Future Research Directions
 
 ### Key Conclusions
 1. **Convergence Validated:** Multiblob shell discretization systematically converges to Stokes Law ($98.9\%$ accuracy at $N=2562$).
