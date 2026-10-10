@@ -1,0 +1,12 @@
+scheme                                   mobility
+mobility_blobs_implementation            python_no_wall
+mobility_vector_prod_implementation      python_no_wall
+eta                                      1.0
+g                                        46.51162790697674
+blob_radius                              0.0742
+repulsion_strength                       0.0
+debye_length                             1.0
+repulsion_strength_wall                  0.0
+debye_length_wall                        1.0
+output_name                              data/cylinder_broadside_F_4000
+structure cylinder_N_86.vertex single_broadside.clones
