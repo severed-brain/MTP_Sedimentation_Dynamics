@@ -240,9 +240,73 @@ To evaluate non-spherical bodies, spherical shells were stretched along Cartesia
 | :---: | :---: |
 | ![Prolate Velocity vs Force](figures/ellipsoid_velocity_vs_force.png) | ![Oblate Velocity vs Force](figures/oblate_velocity_vs_force.png) |
 
-### 6.1 Hydrodynamic Observations
+### 6.1 Hydrodynamic Observations: Spheroids
 * **Prolate Spheroids:** When falling along their long axis of symmetry, prolate particles present a smaller cross-sectional area to the flow, leading to higher terminal velocity (reduced drag) compared to an equivalent-volume sphere.
 * **Oblate Spheroids:** Disk-like shapes oriented with their broad face perpendicular to gravity experience heightened frontal resistance, lowering sedimentation speed.
+
+---
+
+### 6.2 Planar Circular Discs: Multi-Resolution Discretization ($N \in \{19, 37, 61, 91\}$)
+
+Planar circular discs of radius $R = 1.0$ were discretized into concentric rings of multiblobs to evaluate surface discretization convergence:
+* **$N = 19$:** Center blob + 2 concentric rings (coarse, $a = 0.2315$)
+* **$N = 37$:** Center blob + 3 concentric rings (standard benchmark, $a = 0.1667$)
+* **$N = 61$:** Center blob + 4 concentric rings (refined, $a = 0.1300$)
+* **$N = 91$:** Center blob + 5 concentric rings (fine, $a = 0.1065$)
+
+![Disc Velocity vs Force across Resolutions](figures/disc_velocity_vs_force.png)
+
+#### Discretization Convergence Table:
+| Discretization ($N$) | Blob Radius ($a$) | Velocity $V_z$ ($F=3000$) | Mobility $\mu$ ($V/F$) | Relative Diff vs $N=91$ |
+| :---: | :---: | :---: | :---: | :---: |
+| **$N = 19$** | $0.2315$ | $130.41$ | $0.04347$ | $+6.29\%$ |
+| **$N = 37$** | $0.1667$ | $124.89$ | $0.04163$ | $+1.79\%$ |
+| **$N = 61$** | $0.1300$ | $123.46$ | $0.04115$ | $+0.62\%$ |
+| **$N = 91$** | $0.1065$ | $122.70$ | $0.04090$ | Reference |
+
+* **Optimal Resolution Choice:** $N = 37$ achieves $1.79\%$ asymptotic agreement with $N = 91$ while reducing matrix assembly and GMRES linear solve costs by over $6\times$, establishing it as the ideal standard for dynamic multi-body trajectory integration.
+
+---
+
+### 6.3 Slender Cylinders: Multi-Resolution Discretization ($N \in \{14, 44, 86, 324\}$)
+
+Cylinders of length $L \approx 2.0$ and nominal radius $R_g \approx 0.15$ were discretized across four distinct geometric topologies:
+* **$N = 14$:** Centerline axial rod ($a = 0.1832$)
+* **$N = 44$:** Surface mesh with 7 rings of 6 blobs + 2 endcaps ($a = 0.1250$)
+* **$N = 86$:** Surface mesh with 14 rings of 6 blobs + 2 endcaps ($a = 0.0742$)
+* **$N = 324$:** High-density surface mesh with 26 rings of 12 blobs + 12 endcaps ($a = 0.0388$)
+
+![Cylinder Velocity vs Force across Resolutions](figures/cylinder_velocity_vs_force.png)
+
+#### Discretization Convergence Table:
+| Discretization ($N$) | Blob Radius ($a$) | Velocity $V_z$ ($F=2000$) | Mobility $\mu$ ($V/F$) | Relative Diff vs $N=324$ |
+| :---: | :---: | :---: | :---: | :---: |
+| **$N = 14$** | $0.1832$ | $199.18$ | $0.09959$ | $+0.19\%$ |
+| **$N = 44$** | $0.1250$ | $179.52$ | $0.08976$ | $-9.70\%$ |
+| **$N = 86$** | $0.0742$ | $196.25$ | $0.09813$ | $-1.28\%$ |
+| **$N = 324$** | $0.0388$ | $198.80$ | $0.09940$ | Reference |
+
+* **Convergence Assessment:** The $N = 86$ surface mesh captures endcap hydrodynamic drag and radial pressure gradients with $< 1.3\%$ error compared to $N=324$, serving as the optimal resolution for dynamic investigations.
+
+---
+
+### 6.4 Chiral Boomerangs: Multi-Resolution Discretization ($N \in \{7, 11, 15\}$)
+
+L-shaped boomerangs with orthogonal arms of length $L = 2.1$ meeting at a $90^\circ$ apex were modeled across three resolutions:
+* **$N = 7$:** Apex + 3 blobs per arm ($a = 0.5250$)
+* **$N = 11$:** Apex + 5 blobs per arm ($a = 0.4000$)
+* **$N = 15$:** Apex + 7 blobs per arm ($a = 0.3245$)
+
+![Boomerang Velocity and Induced Rotation vs Force](figures/boomerang_velocity_vs_force.png)
+
+#### Discretization Convergence & Chiral Coupling Table ($F = 300$):
+| Discretization ($N$) | Blob Radius ($a$) | Sedimentation $V_z$ | Translational Mobility $\mu_T$ | Chiral Mobility $\mu_{TR}$ ($|\mathbf{\Omega}|/F$) |
+| :---: | :---: | :---: | :---: | :---: |
+| **$N = 7$** | $0.5250$ | $14.93$ | $0.04977$ | $7.168 \times 10^{-3}$ |
+| **$N = 11$** | $0.4000$ | $17.33$ | $0.05777$ | $1.039 \times 10^{-2}$ |
+| **$N = 15$** | $0.3245$ | $19.19$ | $0.06397$ | $1.267 \times 10^{-2}$ |
+
+* **Chiral Translation-Rotation Coupling:** Because the L-shape lacks a center of inversion, pure downward gravitational sedimentation induces a non-zero hydrodynamic torque, driving spontaneous rotation ($\mu_{TR} \neq 0$).
 
 ---
 
@@ -252,11 +316,41 @@ When a non-spherical body is tilted at an arbitrary angle $\theta$ relative to t
 
 $$\begin{pmatrix} V_x \\ V_z \end{pmatrix} = \begin{pmatrix} M_{xx} & M_{xz} \\ M_{zx} & M_{zz} \end{pmatrix} \begin{pmatrix} 0 \\ -F_z \end{pmatrix} = \begin{pmatrix} -M_{xz} F_z \\ -M_{zz} F_z \end{pmatrix}$$
 
+### 7.1 Prolate Ellipsoid Lateral Drift
+
 ![Lateral Drift Trajectories for Inclined Ellipsoids](figures/lateral_drift_trajectories.png)
 
-### 7.1 Quantitative Findings
 * **$\theta = 0^\circ$ (Vertical) & $\theta = 90^\circ$ (Horizontal):** By symmetry, $M_{xz} = 0$. The particle sediments strictly vertically without lateral displacement ($V_x = 0$).
 * **$\theta = 45^\circ$:** Off-diagonal mobility coupling $|M_{xz}|$ reaches a global maximum. The particle undergoes significant **cross-stream lateral drift**, moving horizontally while falling.
+
+---
+
+### 7.2 Planar Circular Disc Lateral Drift ($\theta \in [0^\circ, 90^\circ]$)
+
+![Lateral Drift Trajectories for Inclined Discs](figures/disc_lateral_drift_trajectories.png)
+
+* **Maximum Drift at $\theta = 45^\circ$:** Flat discs exhibit pronounced lateral deflection when tilted at $45^\circ$, achieving a maximum glide ratio $|V_x / V_z| \approx 0.174$.
+* **Extremal Orientations:** At edge-on ($\theta = 0^\circ$) and broadside ($\theta = 90^\circ$) inclinations, lateral drift is zero by planar symmetry.
+
+---
+
+### 7.3 Slender Cylinder Lateral Drift ($\theta \in [0^\circ, 90^\circ]$)
+
+![Lateral Drift Trajectories for Inclined Cylinders](figures/cylinder_lateral_drift_trajectories.png)
+
+* **Maximum Drift at $\theta = 45^\circ$:** Slender cylinders ($N=86$) reach peak lateral velocity $V_x = 30.39$ and glide ratio $|V_x / V_z| = 0.1340$ at $\theta = 45^\circ$.
+* **Glide Comparison:** Discs produce a higher glide ratio ($0.174$) than cylinders ($0.134$) due to the planar area anisotropy generating greater cross-stream lift.
+
+---
+
+### 7.4 Boomerang Orientation and Chiral Tumbling Dynamics
+
+![Lateral Drift Trajectories for Inclined Boomerangs](figures/boomerang_lateral_drift_trajectories.png)
+
+![Free Fall Chiral Trajectory and Tumbling](figures/boomerang_chiral_trajectory.png)
+
+* **Combined Pitch and Chiral Drift:** When inclined at angles $\theta \in [0^\circ, 90^\circ]$, boomerangs experience simultaneous cross-stream lateral displacement ($x(t), y(t)$) and continuous rotational precession of their quaternion orientation vector.
+* **Peak Inclination Drift:** Maximum steady-state lateral drift is observed at intermediate inclinations ($\theta \approx 60^\circ - 75^\circ$) where hydrodynamic torque and lift constructively couple.
 
 ---
 

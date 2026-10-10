@@ -1,0 +1,12 @@
+scheme                                   mobility
+mobility_blobs_implementation            python_no_wall
+mobility_vector_prod_implementation      python_no_wall
+eta                                      1.0
+g                                        100.0
+blob_radius                              0.3245
+repulsion_strength                       0.0
+debye_length                             1.0
+repulsion_strength_wall                  0.0
+debye_length_wall                        1.0
+output_name                              data/boomerang_N_15_F_1500
+structure boomerang_N_15.vertex single_body.clones
