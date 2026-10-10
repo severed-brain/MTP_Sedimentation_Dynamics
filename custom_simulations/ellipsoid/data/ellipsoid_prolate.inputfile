@@ -1,0 +1,18 @@
+scheme                                   deterministic_adams_bashforth
+domain                                   no_wall
+mobility_blobs_implementation            python_no_wall
+mobility_vector_prod_implementation      python_no_wall
+blob_blob_force_implementation           None
+dt                                       0.05
+n_steps                                  20
+n_save                                   1
+eta                                      1.0
+g                                        10.0
+blob_radius                              0.1393
+repulsion_strength                       0.0
+debye_length                             1.0
+repulsion_strength_wall                  0.0
+debye_length_wall                        1.0
+save_clones                              one_file
+output_name                              data/ellipsoid_prolate
+structure ellipsoid_prolate_N_162.vertex single_body.clones

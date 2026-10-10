@@ -156,6 +156,13 @@ sim_b_over_a = sorted(b_over_a_vals)
 sim_end_on_norm = [vel_end_on[ba]/u_sphere for ba in sim_b_over_a]
 sim_broad_norm = [vel_broad_side[ba]/u_sphere for ba in sim_b_over_a]
 
+print("\n--- Normalized Terminal Velocity (|U| norm) Data ---")
+print(f"{'b/a':<5} | {'End-On (Parallel)':<20} | {'Broad-Side (Perpendicular)':<25}")
+print("-" * 55)
+for i, ba in enumerate(sim_b_over_a):
+    print(f"{ba:<5.1f} | {sim_end_on_norm[i]:<20.5f} | {sim_broad_norm[i]:<25.5f}")
+print("-" * 55 + "\n")
+
 # Analytical curves
 theory_b_over_a = np.linspace(0.28, 1.0, 100)
 theory_end_on = []
