@@ -1,0 +1,5 @@
+num_of_body_types  1
+body_names         ['ellipsoid_ang_90_single']
+body_types         [1]
+num_bodies         1
+num_blobs          42
