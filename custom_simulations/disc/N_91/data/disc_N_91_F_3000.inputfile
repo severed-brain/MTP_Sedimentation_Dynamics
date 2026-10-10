@@ -1,0 +1,12 @@
+scheme                                   mobility
+mobility_blobs_implementation            python_no_wall
+mobility_vector_prod_implementation      python_no_wall
+eta                                      1.0
+g                                        32.967032967032964
+blob_radius                              0.1000
+repulsion_strength                       0.0
+debye_length                             1.0
+repulsion_strength_wall                  0.0
+debye_length_wall                        1.0
+output_name                              data/disc_N_91_F_3000
+structure disc_N_91.vertex single_body.clones

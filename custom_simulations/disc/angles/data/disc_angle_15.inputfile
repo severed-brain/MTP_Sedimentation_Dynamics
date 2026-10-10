@@ -1,0 +1,18 @@
+scheme                                   deterministic_forward_euler
+domain                                   no_wall
+mobility_blobs_implementation            python_no_wall
+mobility_vector_prod_implementation      python_no_wall
+blob_blob_force_implementation           None
+dt                                       0.05
+n_steps                                  100
+n_save                                   1
+eta                                      1.0
+g                                        54.054054
+blob_radius                              0.1667
+repulsion_strength                       0.0
+debye_length                             1.0
+repulsion_strength_wall                  0.0
+debye_length_wall                        1.0
+save_clones                              one_file
+output_name                              data/disc_angle_15
+structure disc_N_37.vertex clones_angle_15.clones
