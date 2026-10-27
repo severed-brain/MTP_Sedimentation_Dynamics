@@ -1,0 +1,72 @@
+{
+  "feature_names": [
+    "N",
+    "blob_radius",
+    "Lx",
+    "Ly",
+    "Lz",
+    "aspect_ratio_max",
+    "aspect_ratio_z",
+    "V_box",
+    "Rg",
+    "D_max",
+    "A_blobs",
+    "V_blobs",
+    "I_l1",
+    "I_l2",
+    "I_l3",
+    "asphericity",
+    "acylindricity",
+    "rel_anisotropy",
+    "theta_deg",
+    "cos_theta",
+    "sin_2theta",
+    "A_perp",
+    "A_parallel",
+    "area_ratio",
+    "chiral_index",
+    "F",
+    "g_force_per_blob"
+  ],
+  "n_samples": 310,
+  "n_features": 27,
+  "vz_model": "XGBoost Regressor",
+  "metrics_vz": {
+    "Ridge Regression (Baseline)": {
+      "cv_r2_mean": 0.9022525928400154,
+      "cv_r2_std": 0.021165808223268582,
+      "test_r2": 0.9186556567007408,
+      "test_rmse": 27.28191954859407,
+      "test_mae": 18.353300012039014
+    },
+    "Random Forest": {
+      "cv_r2_mean": 0.9683252437366988,
+      "cv_r2_std": 0.013748097964908102,
+      "test_r2": 0.99391600242707,
+      "test_rmse": 7.461149829437924,
+      "test_mae": 4.620497955638441
+    },
+    "XGBoost Regressor": {
+      "cv_r2_mean": 0.9793420642629618,
+      "cv_r2_std": 0.008123286651203201,
+      "test_r2": 0.9976474466280519,
+      "test_rmse": 4.639604785221379,
+      "test_mae": 3.0400557865938453
+    },
+    "Neural Network (MLP)": {
+      "cv_r2_mean": 0.9601433608064504,
+      "cv_r2_std": 0.024068224805823782,
+      "test_r2": 0.5264700719074644,
+      "test_rmse": 65.82410480071064,
+      "test_mae": 50.22751772082471
+    }
+  },
+  "metrics_vx": {
+    "test_r2": 0.9647033818592864,
+    "test_rmse": 0.9058740035279655
+  },
+  "metrics_wz": {
+    "test_r2": 0.9586893630675842,
+    "test_rmse": 2.2784924508233466
+  }
+}

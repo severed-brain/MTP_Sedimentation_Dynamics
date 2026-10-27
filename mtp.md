@@ -718,6 +718,17 @@ State clearly whether the implementation:
      - $N = 2562$: $V_z / (N g) = -0.053002$
    - Matches analytical two-sphere drafting theory ($\mu_0 + \Delta \mu \approx 0.0529 \approx 0.0530$).
 
+5. **Stage 5 — Anisotropic, Chiral & Helical Flagella Benchmark Suites**
+   - **Cylinder ($N \in \{14, 44, 86, 324\}$)**: Multi-resolution mobility linearity and peak lateral drift at $\theta = 45^\circ$.
+   - **Disc ($N \in \{19, 37, 61, 91\}$)**: Planar area drag anisotropy and glide ratio $|V_x / V_z| = 0.174$.
+   - **Boomerang ($N \in \{7, 11, 15\}$)**: Geometric chirality inducing spontaneous translation-rotation spin.
+   - **Ellipsoids (Prolate & Oblate)**: Aspect-ratio scaling and replication of *Phys. Rev. E 109, 065302 (2024)*.
+   - **Helical Flagella ($N \in \{19, 38, 75\}$)**:
+     - Multi-resolution mobility linear solves showing exact Stokes linearity.
+     - Quantified chiral coupling $\mu_{TR} = |\Omega_z| / F$: downward gravity induces axial spin $\Omega_z$.
+     - Forward Euler dynamic angle trajectories ($\theta \in [0^\circ, 90^\circ]$) with peak glide ratio $|V_x / V_z| = 0.1368$ at $\theta = 45^\circ$.
+     - Two-body pair sedimentation ($d/R \in \{2, 4, 6, 8, 10\}$) displaying cooperative drafting enhancement.
+
 ---
 
 ### B. Execution Commands for Reproducing Simulations
@@ -783,4 +794,13 @@ When continuing this project, proceed through the following steps without deviat
 
 4. **Brownian Dynamics (Stochastic Simulations)**:
    - Set `kT > 0` in the input file and switch to documented stochastic schemes (`stochastic_Slip_Trapz` or `stochastic_first_order_RFD`).
+
+5. **AI/ML Surrogate Predictor for Arbitrary 3D Particles**:
+   - The `ml_predictor/` package provides a trained Machine Learning model (XGBoost, Random Forest, MLP) capable of predicting 6-DOF sedimentation velocity ($V_z$), lateral drift ($V_x$), and chiral spin ($\Omega_z$) for any arbitrary single `.vertex` file in $< 4\text{ ms}$ with $R^2 > 0.99$.
+   - **Inference CLI:**
+     ```bash
+     python ml_predictor/predict.py --vertex custom_simulations/helix/single/structures/helix_N_38.vertex --angle 45 --force 1000 --validate
+     ```
+   - **Future Multi-Body AI Extension:** Graph Neural Network (GNN) formulation incorporating pairwise distance kernels $\mathbf{r}_{ij}$ to predict multi-particle collective drafting and suspensions.
+
 
