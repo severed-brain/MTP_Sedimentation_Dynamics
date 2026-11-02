@@ -20,6 +20,8 @@ The cloned repository and, **most importantly, the documentation inside its `doc
 - replace repository functions with equivalent-looking code;
 - invent input-file formats;
 - invent output formats;
+- introduce arbitrary CSV formats when the repository and fluid mechanics standard is formatted whitespace-delimited `.dat`;
+- dump multi-run parameter sweep files flatly into a single directory without subfolder isolation;
 - add physical corrections that are not present in the repository;
 - change the mathematical formulation merely because another implementation may appear better;
 - use external libraries/implementations for the physics when the repository already provides the required functionality.
@@ -431,6 +433,36 @@ If a wrapper wants to provide a convenient summary, it may do so **in addition t
 
 ---
 
+## 12.1 MANDATORY SCIENTIFIC `.dat` CONVENTION & DIRECTORY ISOLATION RULES
+
+As a strict computational fluid dynamics (CFD) and software engineering standard:
+
+### A. Exclusively Use Formatted `.dat` Files for All Numerical & Tabular Data
+- **No Reflexive CSV Usage:** Do not use `.csv` files as the primary scientific data format. The repository, fluid dynamics community, and downstream numerical tools (Gnuplot, MATLAB, Fortran/C pipelines, and `np.loadtxt`) rely strictly on whitespace-delimited `.dat` files.
+- **Fixed-Width & Precision Standards:** Every `.dat` file must feature fixed-width aligned columns with explicit scientific formatting (e.g., `%14.6f` or `%16.8e`).
+- **Comprehensive Header Comments:** All `.dat` files must start with `#` comments specifying:
+  1. The exact physical system and geometry ($N$, $R$, blob radius $a$, fluid viscosity $\eta$, force $F$);
+  2. Numerical scheme and time-step $\Delta t$;
+  3. Single-body baseline velocity $V_0$;
+  4. Numbered column descriptions and physical units.
+- **Zero Third-Party Dependency:** Tabular data reading and writing must use standard Python or NumPy (`np.loadtxt`, `np.savetxt`) without requiring pandas.
+
+### B. Hierarchical Parameter Subfolder Isolation (Zero-Clutter Policy)
+- **Never Dump Multi-Run Output Flatly:** Parameter sweeps (across resolutions $N$, separation distances $d/R$, forces $F$, or orientation angles $\theta$) must NEVER dump all loose files flatly into a single directory.
+- **Structured Parameter Folders:** Each distinct simulation parameter must be isolated in its own dedicated subfolder:
+  - Resolution sweeps: `N_12/`, `N_42/`, `N_162/`, `N_642/`, `N_2562/`
+  - Distance sweeps: `d_2_0/`, `d_2_5/`, `d_3_0/`, `d_4_0/`, ...
+  - Force sweeps: `F_1000/`, `F_2000/`, ...
+  - Angle sweeps: `angle_0/`, `angle_15/`, `angle_30/`, ...
+- **Directory Cleanliness Standard:**
+  - The parent directory contains ONLY:
+    1. The master consolidated `.dat` summary table;
+    2. Master driver script and plotting script;
+    3. The generated benchmark plots (`plots/`).
+  - Individual subfolders contain only the run's specific `input.dat`, `.clones`, and `.config` trajectory. Transient solver tracking files (`.git`, `.random_state`, `.bodies_info`, `.info`, `.time`) must remain quarantined inside their subfolder.
+
+---
+
 # 13. ERROR HANDLING
 
 The interface should validate basic things such as:
@@ -804,3 +836,35 @@ When continuing this project, proceed through the following steps without deviat
    - **Future Multi-Body AI Extension:** Graph Neural Network (GNN) formulation incorporating pairwise distance kernels $\mathbf{r}_{ij}$ to predict multi-particle collective drafting and suspensions.
 
 
+
+---
+
+# 22. COMPLETED MULTI-BODY SIMULATION SUITES & M.TECH RESEARCH LOG
+
+### A. 2-Body Spherical Shell Pair Scaling ($N = 42$)
+- **Data File:** `custom_simulations/sphere/multi_body/data/sphere_pair_scaling.dat`
+- **Distances:** $d/R \in \{2.0, 2.5, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 10.0, 12.0\}$
+- **Figure:** `thesis/figures/sphere_pair_trajectories.png`
+- **Key Result:** At $d/R = 2.0$, $V_z / V_0 = 1.4480$ ($+44.8\%$ drafting speedup). Asymptotically decays to Stokeslet theory ($0.76\%$ error at $d/R = 12.0$).
+
+### B. Multi-Resolution 2-Body Convergence ($N \in \{12, 42, 162\}$)
+- **Data File:** `custom_simulations/sphere/multi_body/data/sphere_pair_multires_scaling.dat`
+- **Figure:** `thesis/figures/sphere_pair_multires_convergence.png`
+- **Key Result:** Error relative to continuum Stokeslet at $d/R = 10.0$ drops from $1.85\%$ ($N=12$) to $0.43\%$ ($N=162$).
+
+### C. 5-Sphere Multi-Body Sedimentation ($M = 5$, $N = 42$)
+- **Linear Horizontal Chain Data:** `custom_simulations/sphere/multi_body/data/five_body/sphere_5body_chain_scaling.dat`
+  - Demonstrates Stokesian chain instability: Center sphere ($k=3$) falls at $113.25\,\text{units/s}$ vs. edge spheres ($k=1,5$) at $97.91\,\text{units/s}$ ($+15.7\%$ center speedup at $d/R = 2.0$), producing an inverted horseshoe deformation profile.
+- **Pentagonal Ring Cluster Data:** `custom_simulations/sphere/multi_body/data/five_body/sphere_5body_ring_scaling.dat`
+  - Demonstrates collective suspension drafting: $V_z / V_0 = 2.4403$ ($+144\%$ speedup at $d/R = 2.0$) following $1 + 2.43(R/d)$ screening theory.
+- **Figure:** `thesis/figures/sphere_5body_dynamics.png`
+
+### D. Non-Spherical Pair Sedimentation ($M = 2$)
+- **Cube ($N = 56$):** `custom_simulations/multi_body/data/cube/cube_pair_scaling.dat` ($V_z / V_0 = 1.5449$ at $d/R = 2.0$)
+- **Hexagonal Prism ($N = 74$):** `custom_simulations/multi_body/data/hexagonal_prism/hexagonal_prism_pair_scaling.dat` ($V_z / V_0 = 1.4277$ at $d/R = 2.0$)
+- **Chiral Trefoil Knot ($N = 64$):** `custom_simulations/multi_body/data/trefoil_knot/trefoil_knot_pair_scaling.dat` ($V_z / V_0 = 1.5500$ at $d/R = 2.0$)
+- **Figure:** `thesis/figures/additional_shapes_pair_scaling.png`
+
+### E. LaTeX M.Tech Documentation
+- Complete, publication-ready LaTeX report with formatted tables, equations, and figure captions is maintained at:
+  `thesis/MTP_RESEARCH_LOG_LATEX.tex`
