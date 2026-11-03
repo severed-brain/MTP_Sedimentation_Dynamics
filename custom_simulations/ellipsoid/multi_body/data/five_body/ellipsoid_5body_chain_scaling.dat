@@ -1,0 +1,20 @@
+# RigidMultiblobsWall Multi-Body Sedimentation Scaling: 5-Ellipsoid Linear Chain (Array)
+# Discretization: N=42 blobs per ellipsoid, M=5 bodies, Total Blobs = 210, Force: F=1000.0, dt=0.02
+# Single Ellipsoid Baseline: V0 = 40.449433 units/s
+# Spatial Configuration: Symmetrical horizontal chain along x-axis: x_k in {-2d, -d, 0, d, 2d}
+# Columns:
+# 1: d/R (Separation Ratio)
+# 2-6: Vz_B1 to Vz_B5 (units/s)
+# 7: Vz_Mean (units/s)
+# 8: Vz/V0 (Enhancement Ratio)
+# 9: Center/Edge_Ratio (Chain Instability Gradient)
+# 10: Wallclock_Time (s)
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
+# d/R      Vz_B1(Edge)    Vz_B2(Mid)     Vz_B3(Center)  Vz_B4(Mid)     Vz_B5(Edge)    Vz_Mean        Vz/V0(Ratio)   Center/Edge_Ratio  Wallclock(s)
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
+  2.00     91.913484      96.516800      99.494176      96.514972      91.543109      95.196508      2.353470       1.084662           14.11     
+  3.00     69.306202      81.339148      85.185216      81.320909      69.343652      77.299025      1.911004       1.228782           8.86      
+  4.00     60.696447      70.916500      75.774671      70.922963      60.705398      67.803196      1.676246       1.248328           6.91      
+  6.00     53.204714      59.974086      62.241622      59.974333      53.204880      57.719927      1.426965       1.169850           6.35      
+  8.00     50.154147      54.842455      55.944914      54.842471      50.154113      53.187620      1.314916       1.115460           6.06      
+  10.00    48.395278      51.851371      52.612675      51.851374      48.395267      50.621193      1.251469       1.087145           5.67      
