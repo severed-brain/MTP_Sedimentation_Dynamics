@@ -1,0 +1,151 @@
+{
+  "feature_names_ratio": [
+    "N",
+    "blob_radius",
+    "Lx",
+    "Ly",
+    "Lz",
+    "aspect_ratio_max",
+    "aspect_ratio_z",
+    "V_box",
+    "Rg",
+    "D_max",
+    "A_blobs",
+    "V_blobs",
+    "I_l1",
+    "I_l2",
+    "I_l3",
+    "asphericity",
+    "acylindricity",
+    "rel_anisotropy",
+    "theta_deg",
+    "cos_theta",
+    "sin_2theta",
+    "A_perp",
+    "A_parallel",
+    "area_ratio",
+    "chiral_index",
+    "F",
+    "g_force_per_blob",
+    "d_r",
+    "inv_d_r",
+    "inv_d_r3",
+    "rel_yaw_deg",
+    "cos_rel_yaw"
+  ],
+  "feature_names_vz": [
+    "N",
+    "blob_radius",
+    "Lx",
+    "Ly",
+    "Lz",
+    "aspect_ratio_max",
+    "aspect_ratio_z",
+    "V_box",
+    "Rg",
+    "D_max",
+    "A_blobs",
+    "V_blobs",
+    "I_l1",
+    "I_l2",
+    "I_l3",
+    "asphericity",
+    "acylindricity",
+    "rel_anisotropy",
+    "theta_deg",
+    "cos_theta",
+    "sin_2theta",
+    "A_perp",
+    "A_parallel",
+    "area_ratio",
+    "chiral_index",
+    "F",
+    "g_force_per_blob",
+    "d_r",
+    "inv_d_r",
+    "inv_d_r3",
+    "rel_yaw_deg",
+    "cos_rel_yaw",
+    "single_Vz"
+  ],
+  "n_samples": 70,
+  "n_shapes": 9,
+  "cv_metrics": {
+    "Ridge Regression": {
+      "cv_r2": 0.7808876822272287,
+      "cv_mae": 0.06984275112850565,
+      "cv_rmse": 0.09201034459118328
+    },
+    "Random Forest": {
+      "cv_r2": 0.7580098530578935,
+      "cv_mae": 0.06576889996089176,
+      "cv_rmse": 0.0940854158312265
+    },
+    "XGBoost Regressor": {
+      "cv_r2": 0.8368182183005605,
+      "cv_mae": 0.052850813880213655,
+      "cv_rmse": 0.07490006196340937
+    },
+    "Gradient Boosting (GBR)": {
+      "cv_r2": 0.8790325007740432,
+      "cv_mae": 0.04624881185371957,
+      "cv_rmse": 0.0656965851743416
+    }
+  },
+  "loso_metrics": {
+    "boomerang": {
+      "v0": 17.834230136833803,
+      "ratio_err_pct": 10.478679174373804,
+      "vz_mae": 2.2321553773777247,
+      "vz_err_pct": 10.478679174373799
+    },
+    "cube": {
+      "v0": 33.104412662127956,
+      "ratio_err_pct": 6.134515917241564,
+      "vz_mae": 2.6907901676214436,
+      "vz_err_pct": 6.134515917241559
+    },
+    "cylinder": {
+      "v0": 98.1266253913482,
+      "ratio_err_pct": 6.611887334657568,
+      "vz_mae": 8.915939824500194,
+      "vz_err_pct": 6.6118873346575695
+    },
+    "disc": {
+      "v0": 55.240533903814274,
+      "ratio_err_pct": 9.888377513560261,
+      "vz_mae": 7.94859575867508,
+      "vz_err_pct": 9.888377513560256
+    },
+    "ellipsoid": {
+      "v0": 38.184399910384954,
+      "ratio_err_pct": 6.328351100911626,
+      "vz_mae": 3.2498797003172375,
+      "vz_err_pct": 6.328351100911624
+    },
+    "helix": {
+      "v0": 59.77490917069673,
+      "ratio_err_pct": 16.3412036161713,
+      "vz_mae": 10.386628826581957,
+      "vz_err_pct": 16.3412036161713
+    },
+    "hexagonal_prism": {
+      "v0": 43.32237073807877,
+      "ratio_err_pct": 1.0724099508788867,
+      "vz_mae": 0.5868352113340862,
+      "vz_err_pct": 1.0724099508788882
+    },
+    "sphere": {
+      "v0": 47.276110298302505,
+      "ratio_err_pct": 6.897942236854991,
+      "vz_mae": 4.019669818436478,
+      "vz_err_pct": 6.897942236854983
+    },
+    "trefoil_knot": {
+      "v0": 44.98903362548964,
+      "ratio_err_pct": 4.0977355317736786,
+      "vz_mae": 2.409238789744903,
+      "vz_err_pct": 4.097735531773685
+    }
+  }
+}
