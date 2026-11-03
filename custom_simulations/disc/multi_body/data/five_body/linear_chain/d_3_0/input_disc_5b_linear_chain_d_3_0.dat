@@ -1,0 +1,18 @@
+scheme                                   deterministic_forward_euler
+domain                                   no_wall
+mobility_blobs_implementation            python_no_wall
+mobility_vector_prod_implementation      python_no_wall
+blob_blob_force_implementation           None
+dt                                       0.02
+n_steps                                  50
+n_save                                   1
+eta                                      1.0
+g                                        27.02702702702703
+blob_radius                              0.1667
+repulsion_strength                       0.0
+debye_length                             1.0
+repulsion_strength_wall                  0.0
+debye_length_wall                        1.0
+save_clones                              one_file
+output_name                              disc_5b_linear_chain_d_3_0
+structure D:\sedimentation_dynamics\custom_simulations\disc\multi_body\structures\disc_N_37.vertex D:\sedimentation_dynamics\custom_simulations\disc\multi_body\data\five_body\linear_chain\d_3_0\disc_5b_linear_chain_d_3_0.clones

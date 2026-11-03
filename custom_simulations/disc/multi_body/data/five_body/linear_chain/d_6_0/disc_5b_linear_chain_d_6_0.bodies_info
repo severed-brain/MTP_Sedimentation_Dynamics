@@ -1,0 +1,5 @@
+num_of_body_types  1
+body_names         ['disc_5b_linear_chain_d_6_0']
+body_types         [5]
+num_bodies         5
+num_blobs          185

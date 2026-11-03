@@ -1,0 +1,21 @@
+# RigidMultiblobsWall Multi-Body Sedimentation Scaling: 5-Disc Pentagonal Ring (Cluster)
+# Discretization: N=37 blobs per disc, M=5 bodies, Total Blobs = 185, Force: F=1000.0, dt=0.02
+# Single Disc Baseline: V0 = 55.165022 units/s
+# Spatial Configuration: Symmetrical pentagonal ring on xy-plane with inter-body chord distance d
+# Columns:
+# 1: d/R (Chord Separation Ratio)
+# 2: R_ring/R (Circumcircle Radius Ratio)
+# 3: Vz_Cluster (Mean Sedimentation Velocity, units/s)
+# 4: V0_Baseline (Single-Body Baseline Velocity, units/s)
+# 5: Cluster_Ratio (V/V0 Enhancement)
+# 6: Theoretical_Stokeslet_Est (1 + 2.060*(R/d))
+# 7: Wallclock_Time (s)
+# ----------------------------------------------------------------------------------------------------------------
+# d/R      R_ring/R   Vz_Cluster (u/s)   V0_Baseline (u/s)  Cluster_Ratio V/V0 Theoretical_Stokeslet(Est) Wallclock(s)
+# ----------------------------------------------------------------------------------------------------------------
+  2.00     1.7013     137.734902         55.165022          2.496780            2.030000                  10.46     
+  3.00     2.5520     128.120302         55.165022          2.322492            1.686667                  7.29      
+  4.00     3.4026     108.951318         55.165022          1.975007            1.515000                  5.55      
+  6.00     5.1039     89.812166          55.165022          1.628064            1.343333                  4.86      
+  8.00     6.8052     86.676510          55.165022          1.571222            1.257500                  5.15      
+  10.00    8.5065     78.488040          55.165022          1.422786            1.206000                  4.91      
