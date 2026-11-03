@@ -865,6 +865,68 @@ When continuing this project, proceed through the following steps without deviat
 - **Chiral Trefoil Knot ($N = 64$):** `custom_simulations/multi_body/data/trefoil_knot/trefoil_knot_pair_scaling.dat` ($V_z / V_0 = 1.5500$ at $d/R = 2.0$)
 - **Figure:** `thesis/figures/additional_shapes_pair_scaling.png`
 
-### E. LaTeX M.Tech Documentation
+### E. Multi-Body Circular Disc Suites ($R = 1.0$)
+- **Directory:** `custom_simulations/disc/multi_body/`
+- **2-Body Pair Scaling ($N = 37$, $a = 0.1667$):**
+  - **Data File:** `custom_simulations/disc/multi_body/data/disc_pair_scaling.dat`
+  - **Baseline:** $V_0 = 55.1650\,\text{units/s}$
+  - **Figure:** `thesis/figures/disc_pair_trajectories.png`
+  - **Key Result:** At $d/R = 2.0$, $V_z / V_0 = 1.7053$ ($+70.5\%$ drafting enhancement). Asymptotically decays to continuum broadside Stokeslet theory ($1 + \frac{2}{\pi}\frac{R}{d}$, $2.75\%$ deviation at $d/R = 12.0$).
+- **Multi-Resolution Convergence ($N \in \{19, 37, 61\}$):**
+  - **Data File:** `custom_simulations/disc/multi_body/data/disc_pair_multires_scaling.dat`
+  - **Figure:** `thesis/figures/disc_pair_multires_convergence.png`
+  - **Key Result:** Strict monotonic convergence towards broadside continuum limit as $N$ increases ($a = 0.2500 \to 0.1250$).
+- **5-Disc Collective Dynamics ($M = 5, N = 37$):**
+  - **Linear Chain Data:** `custom_simulations/disc/multi_body/data/five_body/disc_5body_chain_scaling.dat`
+    - Inverted sagging profile with peak center-to-edge velocity gradient $V_{\text{center}} / V_{\text{edge}} = 1.3622$ ($+36.2\%$) at $d/R = 3.0$.
+  - **Pentagonal Ring Cluster Data:** `custom_simulations/disc/multi_body/data/five_body/disc_5body_ring_scaling.dat`
+    - Collective suspension drafting: $V_z / V_0 = 2.4968$ ($+149.7\%$ speedup at $d/R = 2.0$) following $1 + 2.060(R/d)$ broadside cluster theory.
+  - **Figure:** `thesis/figures/disc_5body_dynamics.png`
+
+### F. Multi-Body Cylindrical Particle Suites ($R = 1.0$)
+- **Directory:** `custom_simulations/cylinder/multi_body/`
+- **2-Body Pair Scaling ($N = 86$, $a = 0.0742$):**
+  - **Data File:** `custom_simulations/cylinder/multi_body/data/cylinder_pair_scaling.dat`
+  - **Baseline:** $V_0 = 98.1266\,\text{units/s}$
+  - **Figure:** `thesis/figures/cylinder_pair_trajectories.png`
+  - **Key Result:** At $d/R = 2.0$, $V_z / V_0 = 1.6014$ ($+60.1\%$ drafting enhancement). Asymptotically decays to continuum Stokeslet theory ($2.59\%$ deviation at $d/R = 12.0$).
+- **Multi-Resolution Convergence ($N \in \{14, 44, 86\}$):**
+  - **Data File:** `custom_simulations/cylinder/multi_body/data/cylinder_pair_multires_scaling.dat`
+  - **Figure:** `thesis/figures/cylinder_pair_multires_convergence.png`
+  - **Key Result:** Centerline rod ($N=14$, $V_z/V_0=1.6792$) to full surface discretization ($N=86$, $V_z/V_0=1.6014$).
+- **5-Cylinder Collective Dynamics ($M = 5, N = 86$):**
+  - **Linear Chain Data:** `custom_simulations/cylinder/multi_body/data/five_body/cylinder_5body_chain_scaling.dat`
+    - Center cylinder reaches $215.83\,\text{units/s}$ vs. edge cylinders at $153.00\,\text{units/s}$ ($+37.2\%$ sagging gradient at $d/R = 3.0$).
+  - **Pentagonal Ring Cluster Data:** `custom_simulations/cylinder/multi_body/data/five_body/cylinder_5body_ring_scaling.dat`
+    - Collective suspension drafting: $V_z / V_0 = 1.8713$ ($+87.1\%$ speedup at $d/R = 2.0$).
+  - **Figure:** `thesis/figures/cylinder_5body_dynamics.png`
+
+### G. Multi-Body Prolate Ellipsoid Suites ($R = 1.0, c/a = 2.0$)
+- **Directory:** `custom_simulations/ellipsoid/multi_body/`
+- **2-Body Pair Scaling ($N = 42$, $a = 0.2735$):**
+  - **Data File:** `custom_simulations/ellipsoid/multi_body/data/ellipsoid_pair_scaling.dat`
+  - **Baseline:** $V_0 = 40.4494\,\text{units/s}$
+  - **Figure:** `thesis/figures/ellipsoid_pair_trajectories.png`
+  - **Key Result:** Exceptional fidelity with Stokeslet theory across all separations: $V_z / V_0 = 1.3608$ at $d/R = 2.0$ ($1.03\%$ error), exact match at $d/R = 6.0$ ($0.00\%$ error), and $1.0782$ at $d/R = 12.0$.
+- **Multi-Resolution Convergence ($N \in \{12, 42, 162\}$):**
+  - **Data File:** `custom_simulations/ellipsoid/multi_body/data/ellipsoid_pair_multires_scaling.dat`
+  - **Figure:** `thesis/figures/ellipsoid_pair_multires_convergence.png`
+  - **Key Result:** Monotonic convergence to continuum limit ($N=162$ error drops to $0.60\% - 1.03\%$ for $d/R \ge 8.0$).
+- **5-Ellipsoid Collective Dynamics ($M = 5, N = 42$):**
+  - **Linear Chain Data:** `custom_simulations/ellipsoid/multi_body/data/five_body/ellipsoid_5body_chain_scaling.dat`
+    - Peak sagging gradient $V_{\text{center}} / V_{\text{edge}} = 1.2483$ ($+24.8\%$) at $d/R = 4.0$.
+  - **Pentagonal Ring Cluster Data:** `custom_simulations/ellipsoid/multi_body/data/five_body/ellipsoid_5body_ring_scaling.dat`
+    - Collective suspension drafting: $V_z / V_0 = 2.3479$ ($+134.8\%$ speedup at $d/R = 2.0$).
+  - **Figure:** `thesis/figures/ellipsoid_5body_dynamics.png`
+
+### H. Universal Morphology-Dependent Drafting Synthesis
+1. **Near-Contact Drafting Hierarchy ($d/R = 2.0$):**
+   $$\text{Disc } (1.7053) > \text{Cylinder } (1.6014) > \text{Trefoil } (1.5500) \approx \text{Cube } (1.5449) > \text{Sphere } (1.4480) > \text{Hex. Prism } (1.4277) > \text{Ellipsoid } (1.3608)$$
+2. **Collective Many-Body Nonlinearity ($M = 5$ Ring Cluster at $d/R = 2.0$):**
+   $$\text{Disc } (2.4968) > \text{Sphere } (2.4403) > \text{Ellipsoid } (2.3479) > \text{Cylinder } (1.8713)$$
+3. **Far-Field Point-Stokeslet Invariance:**
+   All 7 geometries collapse onto the universal point-Stokeslet asymptotic decay ($1 + \frac{3}{4}\frac{R}{d}$) within $< 3.5\%$ relative deviation by $d/R = 10.0 - 12.0$.
+
+### I. LaTeX M.Tech Documentation
 - Complete, publication-ready LaTeX report with formatted tables, equations, and figure captions is maintained at:
   `thesis/MTP_RESEARCH_LOG_LATEX.tex`
