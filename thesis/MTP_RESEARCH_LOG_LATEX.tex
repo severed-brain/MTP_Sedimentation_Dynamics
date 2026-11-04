@@ -633,6 +633,33 @@ While analytical models (such as Chajwa et al.) rely primarily on far-field poin
     \item \textbf{Wall Boundaries via the Blake Tensor:} The inclusion of the Blake image system enables modeling sedimentation in bounded channels and near solid substrates, capturing wall-induced drag amplification.
 \end{enumerate}
 
+\subsection{Comprehensive Theory-to-Simulation Validation Matrix}
+To explicitly demonstrate how every theoretical milestone discussed in this work is rigorously corroborated by our numerical simulation data, Table~\ref{tab:theory_validation_matrix} maps each foundational physical concept directly to its corresponding numerical simulation proof, error metric, and visualization in this thesis.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Comprehensive matrix mapping theoretical hydrodynamic concepts to our simulation validation results.}
+\label{tab:theory_validation_matrix}
+\begin{tabular}{p{3.2cm}p{3.8cm}p{4.2cm}p{3.0cm}}
+\toprule
+\textbf{Theoretical Principle} & \textbf{Analytical Formulation} & \textbf{Our Numerical Validation Result} & \textbf{Figure / Table Reference} \\
+\midrule
+\textbf{Navier-Stokes Vanishing Inertia ($Re \to 0$)} & $Re \to 0 \implies \eta \nabla^2 \mathbf{u} - \nabla p = \mathbf{0}$; instantaneity ($d\mathbf{V}/dt = 0$) and linear superposition & Adams-Bashforth, Forward Euler, and Mobility schemes agree to $10^{-14}$ precision; $V \propto F$ linearity ($R^2 = 1.000000$) & Sec. 2; Fig.~6 in presentation; `schemes_side_by_side_comparison.png` \\
+\midrule
+\textbf{Universal Far-Field Point-Stokeslet Decay} & Green's function Oseen tensor: $V_z / V_0 \approx 1 + \frac{3}{4}(R/d)$ as $d/R \gg 1$ & All 7 morphologies collapse onto point-Stokeslet curve: Spheres ($0.76\%$ dev. at $d=12$), Ellipsoids ($1.48\%$), Cylinders ($2.59\%$), Discs ($2.75\%$) & Tabs.~\ref{tab:sphere_pair_scaling}, \ref{tab:additional_shapes_scaling}, \ref{tab:disc_pair_scaling}, \ref{tab:cylinder_pair_scaling}, \ref{tab:ellipsoid_pair_scaling}; Figs.~\ref{fig:sphere_pair_trajectories}, \ref{fig:disc_pair_trajectories}, \ref{fig:cylinder_pair_trajectories}, \ref{fig:ellipsoid_pair_trajectories} \\
+\midrule
+\textbf{Boundary Multiblob Discretization Convergence} & Discretizing 2D surface into $N$ regularized RPY blobs approaches continuous no-slip boundary & Spherical shells ($N=12 \to 2562$) converge monotonically to Stokes Law ($98.9\%$ accuracy at $N=2562$); multi-res pair deviation drops from $1.85\%$ ($N=12$) to $0.43\%$ ($N=162$) & Tab.~\ref{tab:sphere_multires_scaling}; Figs.~\ref{fig:sphere_multires_convergence}, \ref{fig:disc_multires_convergence}, \ref{fig:cylinder_multires_convergence}, \ref{fig:ellipsoid_multires_convergence} \\
+\midrule
+\textbf{The Crowley Instability in Falling Chains} & Crowley (1971): mutual drafting and lateral fluid in-rush cause horizontal arrays to sag into an inverted chevron & In 5-body linear chains across Spheres, Discs, Cylinders, and Ellipsoids, center bodies fall $24.8\% - 37.2\%$ faster, creating physical sagging profiles & Tabs.~\ref{tab:sphere_5body_chain}, \ref{tab:sphere_5body_ring}; Figs.~\ref{fig:sphere_5body_dynamics}, \ref{fig:disc_5body_dynamics}, \ref{fig:cylinder_5body_dynamics}, \ref{fig:ellipsoid_5body_dynamics} \\
+\midrule
+\textbf{Kepler Orbits \& Shape Anisotropy (Chajwa)} & Chajwa et al. (PRL 2019): Spheres maintain $d(t)=d_0$; anisotropic bodies couple orientation to drift ($V_x \propto \sin 2\theta$) & Sphere pairs maintain $d(t) \equiv d_0$ ($0.00\%$ lateral drift); inclined ellipsoids ($\theta \in [0^\circ, 90^\circ]$) exhibit strong drift peaking at $\theta = 45^\circ$, replicating PRE 109, 065302 & Sec. 6, Tab.~\ref{tab:trajectory_taxonomy}; Fig.~\ref{fig:sphere_pair_trajectories}(C); `lateral_drift_trajectories.png` \\
+\midrule
+\textbf{Planar Wake Amplification} & Broadside disc drag $F = 16\eta R V_0$; displaces larger lateral fluid envelope than sphere & At $d/R = 2.0$, broadside disc pair drafting reaches $V_z/V_0 = 1.7053$ ($+70.5\%$), outperforming spheres ($1.4480$) and ellipsoids ($1.3608$) & Tab.~\ref{tab:disc_pair_scaling}, Sec. 6.3; Fig.~\ref{fig:disc_pair_trajectories} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 % ==============================================================================
 \section{Extrapolation: Machine Learning Surrogate Modeling for Arbitrary Particulate Geometries}
 % ==============================================================================

@@ -164,7 +164,19 @@
 
 ---
 
-## Slide 13: Conclusions & Master's Defense Takeaways
+## Slide 13: Theory-to-Validation Matrix: Connecting Physics to Simulation Data
+| Theoretical Principle | Analytical Formulation | Our Numerical Simulation Validation | Proof Location |
+| :--- | :--- | :--- | :--- |
+| **Vanishing Inertia ($Re \to 0$)** | Instantaneity ($d\mathbf{V}/dt = 0$); linear drag | Multi-scheme comparison matches to $10^{-14}$ precision; $V \propto F$ linearity ($R^2 = 1.000000$) | Slide 6; `schemes_side_by_side_comparison.png` |
+| **Far-Field Point Stokeslet** | Green's function Oseen tensor: $V_z / V_0 \approx 1 + \frac{3}{4}\frac{R}{d}$ | All 7 geometries collapse onto Stokeslet curve ($< 3.5\%$ error at $d/R = 10 - 12$) | Slide 8; `figures/*_pair_trajectories.png` |
+| **Boundary Multiblob Convergence** | Discretized RPY blobs approach continuous surface as $N \to \infty$ | Shells converge monotonically to Stokes Law ($98.9\%$ accuracy at $N=2562$) | Slide 5; `figures/*_multires_convergence.png` |
+| **The Crowley Instability** | Crowley (1971): wake focusing & lateral in-rush trigger inverted sagging | 5-body chains exhibit $+24.8\% - 37.2\%$ center speedup, creating physical sagging chevrons | Slide 9; `figures/*_5body_dynamics.png` |
+| **Kepler Orbits & Shape Anisotropy** | Chajwa et al. (PRL 2019): Spheres maintain $d(t)=d_0$; discs couple tilt to drift | Sphere pairs maintain $d(t) \equiv d_0$ ($0.0\%$ drift); inclined ellipsoids exhibit strong lateral drift ($V_x \ne 0$) | Slide 7, 10; `lateral_drift_trajectories.png` |
+| **Planar Wake Amplification** | Discs displace larger lateral fluid envelope than spheres | At $d/R = 2.0$, disc pair drafting reaches $+70.5\%$ ($V_z/V_0 = 1.7053$) vs. $+44.8\%$ for spheres | Slide 8; `disc_pair_trajectories.png` |
+
+---
+
+## Slide 14: Conclusions & Master's Defense Takeaways
 1. **First-Principles Scaling:** Vanishing Reynolds number ($Re \to 0$) mathematically establishes the linear, instantaneous Stokes regime where Green's functions transform 3D PDEs into discrete boundary solves.
 2. **Universal Far-Field Invariance:** All 7 tested particle morphologies asymptotically converge to the continuum point-Stokeslet solution ($1 + \frac{3}{4}\frac{R}{d}$) within $< 3.5\%$ deviation by $d/R \ge 10.0$.
 3. **Morphology-Dependent Near-Field Drafting:** Broadside Discs ($+70.5\%$) and Cylinders ($+60.1\%$) exhibit significantly enhanced near-contact drafting relative to Spheres ($+44.8\%$).
