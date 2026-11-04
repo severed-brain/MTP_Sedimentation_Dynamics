@@ -233,6 +233,99 @@ To construct a finite, smooth rigid body (e.g., a spherical shell of radius $R$)
 \end{enumerate}
 
 % ==============================================================================
+\section{Computational Framework and RigidMultiblobsWall Architecture}
+% ==============================================================================
+
+All numerical microhydrodynamic simulations in this work are performed using the high-performance scientific framework \texttt{RigidMultiblobsWall}, developed by Balboa Usabiaga, Delong, Delmotte, Sprinkle, and Donev (Courant Institute / Flatiron Institute / CAMCoS 2016, JCP 2017). This section details the repository architecture, module breakdown, file formats, and execution pipeline utilized across our investigations.
+
+\subsection{Repository Module Breakdown and Source Architecture}
+The \texttt{RigidMultiblobsWall} codebase is structured into modular Python and C++/CUDA libraries:
+\begin{itemize}
+    \item \textbf{\texttt{mobility/} (Core Hydrodynamics Engine):}
+    \begin{itemize}
+        \item \texttt{mobility.py}: Implements the regularized Rotne-Prager-Yamakawa (RPY) mobility tensor in free space, the Rotne-Prager-Blake (RPB) tensor for wall-bounded domains, and the block-diagonal preconditioned GMRES saddle-point solver.
+        \item \texttt{mobility\_numba.py} / \texttt{mobility\_pycuda.py} / C++ (\texttt{pybind11}): High-performance accelerated backends for fast matrix-vector products $\mathbf{M} \cdot \mathbf{f}$ across large blob ensembles ($N > 1000$).
+    \end{itemize}
+    \item \textbf{\texttt{multi\_bodies/} (Multi-Body Dynamics \& Kinematics):}
+    \begin{itemize}
+        \item \texttt{multi\_bodies.py}: Primary time-dependent dynamical simulation engine. Manages deterministic integrators (\texttt{deterministic\_forward\_euler}, \texttt{deterministic\_adams\_bashforth}) and stochastic Brownian integrators (\texttt{stochastic\_first\_order\_RFD}, \texttt{stochastic\_traction\_EM}).
+        \item \texttt{multi\_bodies\_utilities.py}: Static and quasi-steady microhydrodynamic solver. Executes single-step solves for terminal velocity (\texttt{scheme mobility}), external drag force evaluation (\texttt{scheme resistance}), and $6 \times 6$ rigid-body mobility matrix construction (\texttt{scheme body\_mobility}).
+        \item \texttt{multi\_bodies\_functions.py}: Handles geometric transformations, kinematic matrix projections ($\mathbf{u} = \mathbf{K}\mathbf{U}$), constraint force balances ($\mathbf{F} = \mathbf{K}^T \boldsymbol{\lambda}$), and blob-to-body center of mass reductions.
+        \item \texttt{forces.cpp} / \texttt{forces.hpp} / \texttt{forces\_numba.py}: Calculates non-hydrodynamic inter-blob steric forces (screened electrostatic Debye-Hückel / Yukawa repulsion) and wall-repulsion potentials to prevent physical overlap.
+    \end{itemize}
+    \item \textbf{\texttt{quaternion\_integrator/} (Rotational Dynamics):}
+    \begin{itemize}
+        \item \texttt{quaternion\_integrator.py}: Implements norm-preserving quaternion time integration for rigid body orientation:
+        \begin{equation}
+            \frac{d\mathbf{q}_{\text{quat}}}{dt} = \frac{1}{2} \boldsymbol{\Omega}_{\text{quat}} \odot \mathbf{q}_{\text{quat}}
+        \end{equation}
+        incorporating midpoint renormalization to prevent rotational drift during long-duration trajectory runs.
+    \end{itemize}
+    \item \textbf{\texttt{read\_input/} (Input File Parsing):}
+    \begin{itemize}
+        \item \texttt{read\_input.py}: Parses configuration files, validates physical parameters, and constructs runtime data structures.
+    \end{itemize}
+    \item \textbf{\texttt{Laplace\_kernels/} (Fundamental Singularities):}
+    \begin{itemize}
+        \item Implements low-level C++ and Python kernels for point Stokeslet, Blake wall image system, potential doublet, and Stokes-dipole singularities.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Standardized File Formats and Input Specifications}
+The framework relies on three clean, human-readable input file standards:
+
+\subsubsection{1. Geometric Discretization: \texttt{*.vertex} Files}
+Defines the relative internal configuration of blobs forming a rigid body in its reference frame centered at $(0, 0, 0)$ with unit quaternion $(1, 0, 0, 0)$:
+\begin{verbatim}
+N_blobs
+x_0  y_0  z_0  [a_0]
+x_1  y_1  z_1  [a_1]
+...
+\end{verbatim}
+where $(x_i, y_i, z_i)$ are Cartesian blob coordinates and the optional 4th column specifies individual blob hydrodynamic radii $a_i$.
+
+\subsubsection{2. Rigid Body Clones Configuration: \texttt{*.clones} Files}
+Specifies the global position and spatial orientation for each rigid body instance in the simulation domain:
+\begin{verbatim}
+N_bodies
+x_0  y_0  z_0  q0_0  q1_0  q2_0  q3_0
+x_1  y_1  z_1  q0_1  q1_1  q2_1  q3_1
+...
+\end{verbatim}
+where $(x_k, y_k, z_k)$ is the center-of-mass coordinate and $(q_0, q_1, q_2, q_3)$ is the unit quaternion orientation.
+
+\subsubsection{3. Simulation Control Parameters: \texttt{input.dat} Files}
+Governs physical fluid properties, numerical solver settings, and active structures:
+\begin{itemize}
+    \item \texttt{scheme}: Algorithm selection (\texttt{deterministic\_forward\_euler}, \texttt{deterministic\_adams\_bashforth}, or \texttt{mobility}).
+    \item \texttt{domain}: \texttt{free\_space} (unbounded fluid via Oseen/RPY tensor) or \texttt{one\_wall} (bounded fluid via Blake/RPB tensor with no-slip plane at $z = 0$).
+    \item \texttt{eta}: Dynamic fluid viscosity (set to $\eta = 1.0$).
+    \item \texttt{blob\_radius}: Hydrodynamic radius $a$ of constituent blobs.
+    \item \texttt{dt}, \texttt{n\_steps}, \texttt{n\_save}: Timestep, total steps, and output snapshot frequency.
+    \item \texttt{solver\_tolerance}: GMRES residual convergence threshold (typically $10^{-6}$ to $10^{-8}$).
+    \item \texttt{structure}: File paths pointing to the corresponding \texttt{*.vertex} and \texttt{*.clones} files.
+\end{itemize}
+
+\subsection{Simulation Output Telemetry and Data Extraction Pipeline}
+Each execution of \texttt{multi\_bodies.py} or \texttt{multi\_bodies\_utilities.py} generates a standardized suite of output telemetry files:
+\begin{itemize}
+    \item \texttt{*.velocities.dat}: Contains the $6$-DOF linear and angular velocities $(V_x, V_y, V_z, \Omega_x, \Omega_y, \Omega_z)$ for every rigid body.
+    \item \texttt{*.body\_mobility.dat}: Full $6 \times 6$ rigid body mobility matrix $\mathbf{N}$ mapping applied wrench $(\mathbf{F}^T, \mathbf{T}^T)^T$ to motion $(\mathbf{V}^T, \mathbf{\Omega}^T)^T$.
+    \item \texttt{*.clones}: Time-series trajectory files recording spatial coordinates and quaternions across every saved timestep.
+    \item \texttt{*.time}: Wall-clock execution time elapsed during the solve, enabling exact computational scaling profiling.
+    \item \texttt{*.info}: Records GMRES iteration counts, residual history, and wall-collision diagnostics.
+    \item \texttt{*.random\_state}: Preserves pseudo-random number generator seeds for exact numerical reproducibility.
+\end{itemize}
+
+\subsection{Automated Workflow and Orchestration Architecture}
+Around the core \texttt{RigidMultiblobsWall} repository, we engineered an automated Python workflow pipeline:
+\begin{enumerate}
+    \item \textbf{Parametric Sweep Generators:} Custom scripts automatically generate parametric separation sweeps ($d/R \in [2.0, 12.0]$) by constructing corresponding \texttt{*.clones} files for single bodies, pairs, 5-body chains, and 5-body ring clusters.
+    \item \textbf{Isolated Execution Harness:} Parameter runs are executed in isolated directory structures, ensuring clean separation of input configurations and raw output telemetry.
+    \item \textbf{Scientific Data Aggregation:} Trajectory snapshots and velocity logs are parsed, converted into whitespace-delimited scientific \texttt{.dat} scaling tables (complying with fluid dynamics standards), and plotted using automated 4-panel matplotlib visualization suites.
+\end{enumerate}
+
+% ==============================================================================
 \section{Multi-Body Sedimentation Experiments and Discretization Convergence}
 % ==============================================================================
 

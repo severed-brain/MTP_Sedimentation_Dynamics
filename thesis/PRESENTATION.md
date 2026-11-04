@@ -62,7 +62,26 @@
 
 ---
 
-## Slide 5: Multi-Resolution Shell Discretization & Convergence
+## Slide 5: Computational Architecture & RigidMultiblobsWall Framework
+* **Software Heritage & Authoritative Source:**
+  * Framework: `RigidMultiblobsWall` (Balboa Usabiaga et al., Courant Institute / Flatiron Institute / CAMCoS 2016, JCP 2017).
+  * High-performance Stokesian dynamics framework for passive, active, and multi-body suspensions.
+* **Core Module Breakdown:**
+  * `mobility/mobility.py`: Free-space RPY and wall-bounded Blake/RPB tensor evaluations; block-diagonal preconditioned GMRES saddle-point solver.
+  * `multi_bodies/multi_bodies.py`: Dynamic time integrator (Forward Euler, Adams-Bashforth, stochastic RFD).
+  * `multi_bodies/multi_bodies_utilities.py`: Direct quasi-steady mobility solver (`scheme mobility`, `scheme body_mobility`).
+  * `quaternion_integrator/`: Norm-preserving orientation tracking on $S^3$ unit hypersphere: $\frac{d\mathbf{q}}{dt} = \frac{1}{2}\mathbf{\Omega} \odot \mathbf{q}$.
+* **Standardized File Formats:**
+  * `*.vertex`: Relative blob coordinates $(x_i, y_i, z_i)$ and hydrodynamic radius $a_i$ in body frame.
+  * `*.clones`: Global center-of-mass coordinates $(x, y, z)$ and orientation unit quaternions $(q_0, q_1, q_2, q_3)$.
+  * `input.dat`: Problem scheme, domain (`free_space` vs `one_wall`), viscosity $\eta$, timestep $dt$, and solver tolerance ($10^{-8}$).
+* **Telemetry & Automation Layer:**
+  * Outputs: `*.velocities.dat` ($6$-DOF velocities), `*.body_mobility.dat` ($6\times 6$ tensor), `*.clones` (trajectory snapshots), `*.time` (wallclock runtime).
+  * Automation: Custom Python wrappers orchestrate sweeps ($d/R \in [2.0, 12.0]$), format whitespace-delimited scientific `.dat` tables, and generate 4-panel trajectory plots.
+
+---
+
+## Slide 6: Multi-Resolution Shell Discretization & Convergence
 * Discretizing spherical shells ($R_h = 1.0$) into $N$ regularized blobs:
   * **$N = 12$ blobs:** $a = 0.5117$
   * **$N = 42$ blobs:** $a = 0.2735$
@@ -75,7 +94,7 @@
 
 ---
 
-## Slide 6: Computational Complexity & Scheme Evaluation
+## Slide 7: Computational Complexity & Scheme Evaluation
 * Execution wall-clock time for 5 integration steps:
   * $N=12 \to 0.07$ s
   * $N=162 \to 0.52$ s
@@ -87,7 +106,7 @@
 
 ---
 
-## Slide 7: Non-Spherical Particles: Prolate vs. Oblate Ellipsoids
+## Slide 8: Non-Spherical Particles: Prolate vs. Oblate Ellipsoids
 * Shape anisotropy modulates terminal drag and settling speed:
   * **Prolate ($1 \times 1 \times 2$):** Slender profile along settling axis $\implies$ Reduced drag, faster sedimentation ($V_0 = 40.45$).
   * **Oblate ($1 \times 2 \times 2$):** Broad frontal area $\implies$ Elevated drag, slower sedimentation ($V_0 = 33.10$).
@@ -97,7 +116,7 @@
 
 ---
 
-## Slide 8: Multi-Body Pair Hydrodynamic Drafting
+## Slide 9: Multi-Body Pair Hydrodynamic Drafting
 * Pair drafting scaling across separation ratios $d/R \in [2.0, 12.0]$:
   * **Spherical Shells ($N = 42$):** $V_z / V_0 = 1.4480$ at $d/R = 2.0$, decaying to $1.0705$ at $d/R = 12.0$.
   * **Circular Discs ($N = 37$, Broadside):** $V_z / V_0 = 1.7053$ ($+70.5\%$ speedup), closely tracking broadside Stokeslet $1 + \frac{2}{\pi}\frac{R}{d}$.
@@ -107,7 +126,7 @@
 
 ---
 
-## Slide 9: Collective Sedimentation & The Crowley Instability
+## Slide 10: Collective Sedimentation & The Crowley Instability
 * **5-Body Linear Horizontal Array ($M = 5$):**
   * Symmetrical flanks focus downward momentum at the array center.
   * **Center-to-Edge Velocity Gradients:**
@@ -125,7 +144,7 @@
 
 ---
 
-## Slide 10: Non-Spherical Interactions & Keplerian Orbits (Rahul Chajwa's Work)
+## Slide 11: Non-Spherical Interactions & Keplerian Orbits (Rahul Chajwa's Work)
 * **Spheres vs. Anisotropic Discs:**
   * Spheres have reflection symmetry $\implies$ fall along straight vertical paths at constant distance ($d = \text{const}$).
   * Anisotropic bodies (discs, oblate spheroids) couple **orientation to translation** ($V_{\text{drift}} \propto \sin 2\theta$).
@@ -139,7 +158,7 @@
 
 ---
 
-## Slide 11: Taxonomy of Multi-Body Sedimentation Trajectories
+## Slide 12: Taxonomy of Multi-Body Sedimentation Trajectories
 | Configuration | Spatial Trajectory $(x, y, z)$ | Hydrodynamic Mechanism |
 | :--- | :--- | :--- |
 | **Single Isolated Sphere** | Purely vertical linear fall | Isotropic Stokes drag ($F = 6\pi\eta R V_0$) |
@@ -152,7 +171,7 @@
 
 ---
 
-## Slide 12: Extrapolation: Machine Learning Surrogate Modeling
+## Slide 13: Extrapolation: Machine Learning Surrogate Modeling
 * **The Computational Bottleneck:**
   * Multiblob GMRES solves scale as $\mathcal{O}(N^2)$ to $\mathcal{O}(N^3)$, requiring seconds to minutes per shape.
 * **The Collaborative AI Pipeline (Friend's Focus):**
@@ -164,19 +183,19 @@
 
 ---
 
-## Slide 13: Theory-to-Validation Matrix: Connecting Physics to Simulation Data
+## Slide 14: Theory-to-Validation Matrix: Connecting Physics to Simulation Data
 | Theoretical Principle | Analytical Formulation | Our Numerical Simulation Validation | Proof Location |
 | :--- | :--- | :--- | :--- |
-| **Vanishing Inertia ($Re \to 0$)** | Instantaneity ($d\mathbf{V}/dt = 0$); linear drag | Multi-scheme comparison matches to $10^{-14}$ precision; $V \propto F$ linearity ($R^2 = 1.000000$) | Slide 6; `schemes_side_by_side_comparison.png` |
-| **Far-Field Point Stokeslet** | Green's function Oseen tensor: $V_z / V_0 \approx 1 + \frac{3}{4}\frac{R}{d}$ | All 7 geometries collapse onto Stokeslet curve ($< 3.5\%$ error at $d/R = 10 - 12$) | Slide 8; `figures/*_pair_trajectories.png` |
-| **Boundary Multiblob Convergence** | Discretized RPY blobs approach continuous surface as $N \to \infty$ | Shells converge monotonically to Stokes Law ($98.9\%$ accuracy at $N=2562$) | Slide 5; `figures/*_multires_convergence.png` |
-| **The Crowley Instability** | Crowley (1971): wake focusing & lateral in-rush trigger inverted sagging | 5-body chains exhibit $+24.8\% - 37.2\%$ center speedup, creating physical sagging chevrons | Slide 9; `figures/*_5body_dynamics.png` |
-| **Kepler Orbits & Shape Anisotropy** | Chajwa et al. (PRL 2019): Spheres maintain $d(t)=d_0$; discs couple tilt to drift | Sphere pairs maintain $d(t) \equiv d_0$ ($0.0\%$ drift); inclined ellipsoids exhibit strong lateral drift ($V_x \ne 0$) | Slide 7, 10; `lateral_drift_trajectories.png` |
-| **Planar Wake Amplification** | Discs displace larger lateral fluid envelope than spheres | At $d/R = 2.0$, disc pair drafting reaches $+70.5\%$ ($V_z/V_0 = 1.7053$) vs. $+44.8\%$ for spheres | Slide 8; `disc_pair_trajectories.png` |
+| **Vanishing Inertia ($Re \to 0$)** | Instantaneity ($d\mathbf{V}/dt = 0$); linear drag | Multi-scheme comparison matches to $10^{-14}$ precision; $V \propto F$ linearity ($R^2 = 1.000000$) | Slide 7; `schemes_side_by_side_comparison.png` |
+| **Far-Field Point Stokeslet** | Green's function Oseen tensor: $V_z / V_0 \approx 1 + \frac{3}{4}\frac{R}{d}$ | All 7 geometries collapse onto Stokeslet curve ($< 3.5\%$ error at $d/R = 10 - 12$) | Slide 9; `figures/*_pair_trajectories.png` |
+| **Boundary Multiblob Convergence** | Discretized RPY blobs approach continuous surface as $N \to \infty$ | Shells converge monotonically to Stokes Law ($98.9\%$ accuracy at $N=2562$) | Slide 6; `figures/*_multires_convergence.png` |
+| **The Crowley Instability** | Crowley (1971): wake focusing & lateral in-rush trigger inverted sagging | 5-body chains exhibit $+24.8\% - 37.2\%$ center speedup, creating physical sagging chevrons | Slide 10; `figures/*_5body_dynamics.png` |
+| **Kepler Orbits & Shape Anisotropy** | Chajwa et al. (PRL 2019): Spheres maintain $d(t)=d_0$; discs couple tilt to drift | Sphere pairs maintain $d(t) \equiv d_0$ ($0.0\%$ drift); inclined ellipsoids exhibit strong lateral drift ($V_x \ne 0$) | Slide 8, 11; `lateral_drift_trajectories.png` |
+| **Planar Wake Amplification** | Discs displace larger lateral fluid envelope than spheres | At $d/R = 2.0$, disc pair drafting reaches $+70.5\%$ ($V_z/V_0 = 1.7053$) vs. $+44.8\%$ for spheres | Slide 9; `disc_pair_trajectories.png` |
 
 ---
 
-## Slide 14: Conclusions & Master's Defense Takeaways
+## Slide 15: Conclusions & Master's Defense Takeaways
 1. **First-Principles Scaling:** Vanishing Reynolds number ($Re \to 0$) mathematically establishes the linear, instantaneous Stokes regime where Green's functions transform 3D PDEs into discrete boundary solves.
 2. **Universal Far-Field Invariance:** All 7 tested particle morphologies asymptotically converge to the continuum point-Stokeslet solution ($1 + \frac{3}{4}\frac{R}{d}$) within $< 3.5\%$ deviation by $d/R \ge 10.0$.
 3. **Morphology-Dependent Near-Field Drafting:** Broadside Discs ($+70.5\%$) and Cylinders ($+60.1\%$) exhibit significantly enhanced near-contact drafting relative to Spheres ($+44.8\%$).

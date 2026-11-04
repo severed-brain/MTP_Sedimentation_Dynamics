@@ -443,4 +443,53 @@ In 2D Stokes flow, the 2D Green's function decays logarithmically ($\ln r$), whi
 
 \shortanswer{Integrating $1/r$ over a 3D volume produces a conditionally convergent or divergent integral ($\int_0^\infty \frac{1}{r} r^2 dr \to \infty$). This is the classical sedimentation paradox. G.K. Batchelor (1972) resolved this by recognizing that in a closed container, the downward flux of particles must be balanced by an upward fluid backflow ($\langle \mathbf{u} \rangle = \mathbf{0}$), subtracting the mean volume flow and yielding the convergent settling formula: $V(\phi) = V_0 (1 - 6.55 \phi)$.}
 
+% ==============================================================================
+\section{Category 11: RigidMultiblobsWall Software Architecture \& Implementation}
+% ==============================================================================
+
+\question{Q23}{What software framework powers your simulations? Who authored it, and what are its key modules?}
+
+\shortanswer{We use \texttt{RigidMultiblobsWall}, an open-source high-performance Stokesian dynamics framework authored by Balboa Usabiaga, Delong, Delmotte, Sprinkle, and Donev (Courant Institute / Flatiron Institute / CAMCoS 2016, JCP 2017). Its core modules include \texttt{mobility/} for RPY and Blake Green's function solves, \texttt{multi\_bodies/} for dynamic and quasi-steady multi-body integration, and \texttt{quaternion\_integrator/} for rotational tracking.}
+
+\deepdetails{
+The repository architecture consists of:
+\begin{itemize}
+    \item \texttt{mobility/mobility.py}: Evaluates the RPY mobility tensor $\mathbf{M}$, the Rotne-Prager-Blake (RPB) tensor for walls, and the block-diagonal preconditioned GMRES saddle-point solver.
+    \item \texttt{multi\_bodies/multi\_bodies.py}: Time-dependent integrator managing deterministic forward Euler, Adams-Bashforth, and stochastic RFD/Euler-Maruyama solvers.
+    \item \texttt{multi\_bodies/multi\_bodies\_utilities.py}: Quasi-steady solver for single-step mobility solves (\texttt{scheme mobility}), drag resistance (\texttt{scheme resistance}), and $6 \times 6$ rigid-body mobility tensors (\texttt{scheme body\_mobility}).
+    \item \texttt{quaternion\_integrator/quaternion\_integrator.py}: Integrates rigid body orientations on the $S^3$ unit hypersphere with norm renormalization.
+    \item \texttt{multi\_bodies/forces.cpp}: Optional C++/Numba steric repulsion routines for inter-particle Debye/Yukawa potentials.
+\end{itemize}
+}
+
+\vspace{0.4cm}
+\question{Q24}{What are \texttt{*.vertex} and \texttt{*.clones} files, and how does the framework represent arbitrary rigid bodies?}
+
+\shortanswer{A \texttt{*.vertex} file defines the body's internal geometry by listing the Cartesian coordinates $(x_i, y_i, z_i)$ of all constituent blobs relative to its center of mass. A \texttt{*.clones} file defines the global state of each rigid body instance in the simulation, listing its global location $(x, y, z)$ and orientation unit quaternion $(q_0, q_1, q_2, q_3)$.}
+
+\deepdetails{
+For an arbitrary shape (such as a disc, cylinder, or trefoil knot):
+\begin{enumerate}
+    \item The continuous geometry is discretized into $N$ blobs of hydrodynamic radius $a$ and written to \texttt{Structures/shape\_N.vertex}.
+    \item Multiple bodies (e.g., pairs at separation $d$, 5-body chains, or ring clusters) are placed in the simulation by defining their positions and orientations in \texttt{Structures/shape\_M\_bodies.clones}.
+    \item Blobs move according to rigid body kinematics $\mathbf{u}_i = \mathbf{V} + \mathbf{\Omega} \times (\mathbf{x}_i - \mathbf{q})$. The framework assembles the kinematic matrix $\mathbf{K}$ and solves for the unknown constraint forces $\boldsymbol{\lambda}$ and rigid body velocities $\mathbf{U} = (\mathbf{V}^T, \mathbf{\Omega}^T)^T$.
+\end{enumerate}
+}
+
+\vspace{0.4cm}
+\question{Q25}{How does the code switch between unbounded free-space and wall-bounded domains, and what mathematical kernel is activated?}
+
+\shortanswer{By setting the \texttt{domain} parameter in \texttt{input.dat}. In \texttt{domain free\_space}, the code uses the free-space RPY tensor based on the Oseen Stokeslet. In \texttt{domain one\_wall}, the code activates the Rotne-Prager-Blake (RPB) tensor, which uses Blake's image system (Stokeslet + inverted image Stokeslet + Stokes-dipole + potential doublet) to strictly enforce no-slip $\mathbf{u} = \mathbf{0}$ at $z = 0$.}
+
+\vspace{0.4cm}
+\question{Q26}{What output files are generated, and how did you verify numerical convergence and reproducibility?}
+
+\shortanswer{The framework outputs \texttt{*.velocities.dat} ($6$-DOF velocities), \texttt{*.clones} (trajectory positions/quaternions), \texttt{*.time} (execution wall-clock seconds), and \texttt{*.info} (GMRES iteration counts and residual logs). We verified solver convergence by setting GMRES tolerance to $10^{-8}$, confirming that velocity residuals were below machine noise and results were fully deterministic via \texttt{*.random\_state}.}
+
+\vspace{0.4cm}
+\question{Q27}{How does your automated simulation workflow wrap around \texttt{RigidMultiblobsWall}?}
+
+\shortanswer{We built an automated Python orchestration layer (\texttt{custom\_simulations/}) that programmatically generates parameterized \texttt{*.vertex} and \texttt{*.clones} configurations across separation ratios $d/R \in [2.0, 12.0]$, constructs isolated run directories with dedicated \texttt{input.dat} parameters, executes the \texttt{RigidMultiblobsWall} solvers via subprocess, extracts telemetry into standardized scientific whitespace-delimited \texttt{.dat} tables, and renders publication-ready 4-panel trajectory plots.}
+
 \end{document}
+
