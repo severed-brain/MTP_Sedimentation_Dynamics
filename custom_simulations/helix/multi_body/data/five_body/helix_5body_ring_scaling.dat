@@ -1,0 +1,13 @@
+# RigidMultiblobsWall Multi-Body Sedimentation Scaling: 5-Helix Pentagonal Ring (Cluster)
+# Discretization: N=38 blobs per helix, M=5 bodies, Total Blobs = 190, Force: F=1000.0, dt=0.02
+# Single Helix Baseline: V0 = 59.774910 units/s
+# Spatial Configuration: Symmetrical pentagonal ring on xy-plane with inter-body chord distance d
+# ----------------------------------------------------------------------------------------------------------------
+# d/R      R_ring/R   Vz_Cluster (u/s)   V0_Baseline (u/s)  Cluster_Ratio V/V0 Theoretical_Stokeslet(Est) Wallclock(s)
+# ----------------------------------------------------------------------------------------------------------------
+  2.00     1.7013     104.074899         59.774910          1.741113             2.213500                     7.53      
+  3.00     2.5520     81.813280          59.774910          1.368689             1.809000                     5.99      
+  4.00     3.4026     72.503186          59.774910          1.212937             1.606750                     5.46      
+  6.00     5.1039     71.638296          59.774910          1.198468             1.404500                     5.34      
+  8.00     6.8052     70.918811          59.774910          1.186431             1.303375                     5.03      
+  10.00    8.5065     69.966111          59.774910          1.170493             1.242700                     5.09      
