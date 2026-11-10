@@ -77,6 +77,12 @@ shape_configs = {
         "blob_radius": 0.1288,
         "F": 1000.0,
         "R": 1.0
+    },
+    "octagonal_prism": {
+        "vertex": "octagonal_prism_N_98.vertex",
+        "blob_radius": 0.1925,
+        "F": 1000.0,
+        "R": 1.0
     }
 }
 
@@ -225,9 +231,9 @@ def build_multibody_dataset():
             records.append(rec)
 
     # -------------------------------------------------------------------------
-    # 3. Cube, Hexagonal Prism, Trefoil Knot
+    # 3. Cube, Hexagonal Prism, Trefoil Knot, Octagonal Prism
     # -------------------------------------------------------------------------
-    for s in ["cube", "hexagonal_prism", "trefoil_knot"]:
+    for s in ["cube", "hexagonal_prism", "trefoil_knot", "octagonal_prism"]:
         cfg = shape_configs[s]
         pts = shape_pts[s]
         feats = extract_shape_features(pts, blob_radius=cfg["blob_radius"], F=cfg["F"])
@@ -254,6 +260,136 @@ def build_multibody_dataset():
                     rec["target_pair_Vz"] = vz
                     rec["target_ratio"] = ratio
                     rec["target_delta_Vz"] = vz - v0
+                    records.append(rec)
+
+    # -------------------------------------------------------------------------
+    # 4. High-Resolution Sphere Pairs (N=162)
+    # -------------------------------------------------------------------------
+    hr_sph_csv = os.path.join(mb_data, "highres_sphere_pairs.csv")
+    if os.path.exists(hr_sph_csv):
+        pts_s162, _, _ = read_vertex_file(os.path.join(struct_dir, "sphere_N_162.vertex"))
+        feats_s162 = extract_shape_features(pts_s162, blob_radius=0.1380, F=1000.0)
+        df_hr_sph = pd.read_csv(hr_sph_csv)
+        for _, row in df_hr_sph.iterrows():
+            dr = float(row["d_r"])
+            v0 = float(row["V0"])
+            vz = float(row["Vz_avg"])
+            ratio = float(row["ratio"])
+            rec = dict(feats_s162)
+            rec["shape"] = "sphere"
+            rec["d_r"] = dr
+            rec["inv_d_r"] = 1.0 / dr
+            rec["inv_d_r3"] = (1.0 / dr) ** 3
+            rec["rel_yaw_deg"] = 0.0
+            rec["cos_rel_yaw"] = 1.0
+            rec["single_Vz"] = v0
+            rec["target_pair_Vz"] = vz
+            rec["target_ratio"] = ratio
+            rec["target_delta_Vz"] = vz - v0
+            records.append(rec)
+
+    # -------------------------------------------------------------------------
+    # 5. High-Resolution Angle Pairs: Ellipsoids (N=162)
+    # -------------------------------------------------------------------------
+    hr_ellip_csv = os.path.join(mb_data, "highres_angle_pairs_ellipsoid.csv")
+    if os.path.exists(hr_ellip_csv):
+        pts_e162, _, _ = read_vertex_file(os.path.join(struct_dir, "ellipsoid_prolate_N_162.vertex"))
+        df_hr_ellip = pd.read_csv(hr_ellip_csv)
+        for _, row in df_hr_ellip.iterrows():
+            ang1 = float(row["ang1"])
+            ang2 = float(row["ang2"])
+            dr = float(row["d_r"])
+            rel_ang = abs(ang1 - ang2)
+            
+            if ang1 == ang2:
+                # Symmetric pair
+                ang_rad = math.radians(ang1)
+                quat = (math.cos(ang_rad / 2.0), 0.0, math.sin(ang_rad / 2.0), 0.0)
+                feats = extract_shape_features(pts_e162, blob_radius=0.1393, quaternion=quat, F=1000.0)
+                rec = dict(feats)
+                rec["shape"] = "ellipsoid"
+                rec["d_r"] = dr
+                rec["inv_d_r"] = 1.0 / dr
+                rec["inv_d_r3"] = (1.0 / dr) ** 3
+                rec["rel_yaw_deg"] = 0.0
+                rec["cos_rel_yaw"] = 1.0
+                rec["single_Vz"] = float(row["V0_b1"])
+                rec["target_pair_Vz"] = float(row["Vz_avg"])
+                rec["target_ratio"] = float(row["ratio_avg"])
+                rec["target_delta_Vz"] = float(row["Vz_avg"]) - float(row["V0_b1"])
+                records.append(rec)
+            else:
+                # Mismatched pair: record each body with its own orientation and response
+                for b_idx, (a_val, v0_k, vz_k, rat_k) in enumerate([
+                    (ang1, "V0_b1", "Vz_b1", "ratio_b1"),
+                    (ang2, "V0_b2", "Vz_b2", "ratio_b2")
+                ]):
+                    ang_rad = math.radians(a_val)
+                    quat = (math.cos(ang_rad / 2.0), 0.0, math.sin(ang_rad / 2.0), 0.0)
+                    feats = extract_shape_features(pts_e162, blob_radius=0.1393, quaternion=quat, F=1000.0)
+                    rec = dict(feats)
+                    rec["shape"] = "ellipsoid"
+                    rec["d_r"] = dr
+                    rec["inv_d_r"] = 1.0 / dr
+                    rec["inv_d_r3"] = (1.0 / dr) ** 3
+                    rec["rel_yaw_deg"] = rel_ang
+                    rec["cos_rel_yaw"] = math.cos(math.radians(rel_ang))
+                    rec["single_Vz"] = float(row[v0_k])
+                    rec["target_pair_Vz"] = float(row[vz_k])
+                    rec["target_ratio"] = float(row[rat_k])
+                    rec["target_delta_Vz"] = float(row[vz_k]) - float(row[v0_k])
+                    records.append(rec)
+
+    # -------------------------------------------------------------------------
+    # 6. High-Resolution Angle Pairs: Discs (N=91)
+    # -------------------------------------------------------------------------
+    hr_disc_csv = os.path.join(mb_data, "highres_angle_pairs_disc.csv")
+    if os.path.exists(hr_disc_csv):
+        pts_d91, _, _ = read_vertex_file(os.path.join(struct_dir, "disc_N_91.vertex"))
+        df_hr_disc = pd.read_csv(hr_disc_csv)
+        for _, row in df_hr_disc.iterrows():
+            ang1 = float(row["ang1"])
+            ang2 = float(row["ang2"])
+            dr = float(row["d_r"])
+            rel_ang = abs(ang1 - ang2)
+            
+            if ang1 == ang2:
+                # Symmetric pair
+                ang_rad = math.radians(ang1)
+                quat = (math.cos(ang_rad / 2.0), 0.0, math.sin(ang_rad / 2.0), 0.0)
+                feats = extract_shape_features(pts_d91, blob_radius=0.1000, quaternion=quat, F=1000.0)
+                rec = dict(feats)
+                rec["shape"] = "disc"
+                rec["d_r"] = dr
+                rec["inv_d_r"] = 1.0 / dr
+                rec["inv_d_r3"] = (1.0 / dr) ** 3
+                rec["rel_yaw_deg"] = 0.0
+                rec["cos_rel_yaw"] = 1.0
+                rec["single_Vz"] = float(row["V0_b1"])
+                rec["target_pair_Vz"] = float(row["Vz_avg"])
+                rec["target_ratio"] = float(row["ratio_avg"])
+                rec["target_delta_Vz"] = float(row["Vz_avg"]) - float(row["V0_b1"])
+                records.append(rec)
+            else:
+                # Mismatched pair: record each body with its own orientation and response
+                for b_idx, (a_val, v0_k, vz_k, rat_k) in enumerate([
+                    (ang1, "V0_b1", "Vz_b1", "ratio_b1"),
+                    (ang2, "V0_b2", "Vz_b2", "ratio_b2")
+                ]):
+                    ang_rad = math.radians(a_val)
+                    quat = (math.cos(ang_rad / 2.0), 0.0, math.sin(ang_rad / 2.0), 0.0)
+                    feats = extract_shape_features(pts_d91, blob_radius=0.1000, quaternion=quat, F=1000.0)
+                    rec = dict(feats)
+                    rec["shape"] = "disc"
+                    rec["d_r"] = dr
+                    rec["inv_d_r"] = 1.0 / dr
+                    rec["inv_d_r3"] = (1.0 / dr) ** 3
+                    rec["rel_yaw_deg"] = rel_ang
+                    rec["cos_rel_yaw"] = math.cos(math.radians(rel_ang))
+                    rec["single_Vz"] = float(row[v0_k])
+                    rec["target_pair_Vz"] = float(row[vz_k])
+                    rec["target_ratio"] = float(row[rat_k])
+                    rec["target_delta_Vz"] = float(row[vz_k]) - float(row[v0_k])
                     records.append(rec)
 
     df = pd.DataFrame(records)

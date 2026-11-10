@@ -223,8 +223,8 @@ def train_and_evaluate():
     
     # Panel C: Hydrodynamic Drafting Scaling: Simulation vs ML
     ax_c = axes[1, 0]
-    test_shapes = ["sphere", "cube", "hexagonal_prism", "trefoil_knot"]
-    markers = {"sphere": "o", "cube": "s", "hexagonal_prism": "^", "trefoil_knot": "d"}
+    test_shapes = ["sphere", "cube", "hexagonal_prism", "trefoil_knot", "octagonal_prism"]
+    markers = {"sphere": "o", "cube": "s", "hexagonal_prism": "^", "trefoil_knot": "d", "octagonal_prism": "p"}
     
     for s in test_shapes:
         idx = np.where((shapes == s) & (df["rel_yaw_deg"] == 0.0))[0]
