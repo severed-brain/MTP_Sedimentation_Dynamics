@@ -58,7 +58,13 @@ def parse_clones(path):
 
 def determine_shape_class(filepath):
     p = filepath.lower()
-    if "cube" in p:
+    if "octagonal" in p:
+        return "octagonal_prism"
+    elif "hexagonal" in p:
+        return "hexagonal_prism"
+    elif "trefoil" in p:
+        return "trefoil_knot"
+    elif "cube" in p:
         return "cube"
     elif "helix" in p:
         return "helix"
@@ -205,6 +211,109 @@ def harvest_existing_simulations():
             except Exception:
                 pass
                 
+    # Harvest custom benchmark shapes from mobility CSVs (Hexagonal Prism, Trefoil Knot, Octagonal Prism)
+    benchmark_shapes = [
+        {
+            "name": "hexagonal_prism",
+            "vertex": os.path.join(base_dir, "custom_simulations", "hexagonal_prism", "structures", "hexagonal_prism_N_74.vertex"),
+            "data_dir": os.path.join(base_dir, "custom_simulations", "hexagonal_prism", "mobility", "data"),
+            "angle_csv": "hexagonal_prism_angle_sweep.csv",
+            "mob_csv": "hexagonal_prism_mobility.csv",
+            "brad": 0.25
+        },
+        {
+            "name": "trefoil_knot",
+            "vertex": os.path.join(base_dir, "custom_simulations", "trefoil_knot", "structures", "trefoil_knot_N_64.vertex"),
+            "data_dir": os.path.join(base_dir, "custom_simulations", "trefoil_knot", "mobility", "data"),
+            "angle_csv": "trefoil_knot_angle_sweep.csv",
+            "mob_csv": "trefoil_knot_mobility.csv",
+            "brad": 0.1288
+        },
+        {
+            "name": "octagonal_prism",
+            "vertex": os.path.join(base_dir, "custom_simulations", "octagonal_prism", "structures", "octagonal_prism_N_98.vertex"),
+            "data_dir": os.path.join(base_dir, "custom_simulations", "octagonal_prism", "mobility", "data"),
+            "angle_csv": "octagonal_prism_angle_sweep.csv",
+            "mob_csv": "octagonal_prism_mobility.csv",
+            "brad": 0.1925
+        }
+    ]
+    for bs in benchmark_shapes:
+        if not os.path.exists(bs["vertex"]):
+            continue
+        pts_bs, N_bs, _ = read_vertex_file(bs["vertex"])
+        # Angle sweep
+        a_path = os.path.join(bs["data_dir"], bs["angle_csv"])
+        if os.path.exists(a_path):
+            df_ang = pd.read_csv(a_path)
+            for _, row in df_ang.iterrows():
+                ang = float(row["angle_deg"])
+                ang_rad = math.radians(ang)
+                quat = (math.cos(ang_rad / 2.0), 0.0, math.sin(ang_rad / 2.0), 0.0)
+                f_tot = float(row.get("Force", 1000.0))
+                feats = extract_shape_features(pts_bs, blob_radius=bs["brad"], quaternion=quat, F=f_tot)
+                feats["target_Vz"] = abs(float(row["Vz"]))
+                feats["target_Vx"] = abs(float(row["Vx"]))
+                feats["target_Vy"] = 0.0
+                feats["target_Wz"] = abs(float(row["Wz"]))
+                feats["target_glide_ratio"] = feats["target_Vx"] / feats["target_Vz"] if feats["target_Vz"] > 1e-6 else 0.0
+                feats["source"] = "harvested_angle_sweep"
+                feats["shape_class"] = bs["name"]
+                records.append(feats)
+        # Mobility force sweep
+        m_path = os.path.join(bs["data_dir"], bs["mob_csv"])
+        if os.path.exists(m_path):
+            df_mob = pd.read_csv(m_path)
+            for _, row in df_mob.iterrows():
+                f_tot = float(row["Force"])
+                if f_tot == 1000.0:  # already in angle sweep at 0 deg
+                    continue
+                quat = (1.0, 0.0, 0.0, 0.0)
+                feats = extract_shape_features(pts_bs, blob_radius=bs["brad"], quaternion=quat, F=f_tot)
+                feats["target_Vz"] = abs(float(row["Vz"]))
+                feats["target_Vx"] = abs(float(row.get("Vx", 0.0)))
+                feats["target_Vy"] = 0.0
+                feats["target_Wz"] = abs(float(row.get("Wz", 0.0)))
+                feats["target_glide_ratio"] = feats["target_Vx"] / feats["target_Vz"] if feats["target_Vz"] > 1e-6 else 0.0
+                feats["source"] = "harvested_force_sweep"
+                feats["shape_class"] = bs["name"]
+                records.append(feats)
+
+    # Harvest high-resolution single-body simulations
+    highres_solves = [
+        # Sphere N=162
+        {"vertex": os.path.join(base_dir, "custom_simulations", "multi_body", "structures", "sphere_N_162.vertex"),
+         "brad": 0.1380, "F": 1000.0, "ang": 0.0, "Vz": 50.38198, "Vx": 0.0, "Wz": 0.0, "shape": "sphere_shell"},
+        # Ellipsoid N=162
+        {"vertex": os.path.join(base_dir, "custom_simulations", "multi_body", "structures", "ellipsoid_prolate_N_162.vertex"),
+         "brad": 0.1393, "F": 1000.0, "ang": 0.0, "Vz": 42.28049, "Vx": 0.0, "Wz": 0.0, "shape": "ellipsoid"},
+        {"vertex": os.path.join(base_dir, "custom_simulations", "multi_body", "structures", "ellipsoid_prolate_N_162.vertex"),
+         "brad": 0.1393, "F": 1000.0, "ang": 45.0, "Vz": 39.78877, "Vx": 2.49200, "Wz": 0.0, "shape": "ellipsoid"},
+        {"vertex": os.path.join(base_dir, "custom_simulations", "multi_body", "structures", "ellipsoid_prolate_N_162.vertex"),
+         "brad": 0.1393, "F": 1000.0, "ang": 90.0, "Vz": 37.29703, "Vx": 0.0, "Wz": 0.0, "shape": "ellipsoid"},
+        # Disc N=91
+        {"vertex": os.path.join(base_dir, "custom_simulations", "multi_body", "structures", "disc_N_91.vertex"),
+         "brad": 0.1000, "F": 1000.0, "ang": 0.0, "Vz": 57.92335, "Vx": 0.0, "Wz": 0.0, "shape": "disc"},
+        {"vertex": os.path.join(base_dir, "custom_simulations", "multi_body", "structures", "disc_N_91.vertex"),
+         "brad": 0.1000, "F": 1000.0, "ang": 45.0, "Vz": 68.28798, "Vx": 10.3650, "Wz": 0.0, "shape": "disc"},
+        {"vertex": os.path.join(base_dir, "custom_simulations", "multi_body", "structures", "disc_N_91.vertex"),
+         "brad": 0.1000, "F": 1000.0, "ang": 90.0, "Vz": 78.65266, "Vx": 0.0, "Wz": 0.0, "shape": "disc"},
+    ]
+    for hr in highres_solves:
+        if os.path.exists(hr["vertex"]):
+            pts_hr, _, _ = read_vertex_file(hr["vertex"])
+            ang_rad = math.radians(hr["ang"])
+            quat = (math.cos(ang_rad / 2.0), 0.0, math.sin(ang_rad / 2.0), 0.0)
+            feats = extract_shape_features(pts_hr, blob_radius=hr["brad"], quaternion=quat, F=hr["F"])
+            feats["target_Vz"] = abs(hr["Vz"])
+            feats["target_Vx"] = abs(hr["Vx"])
+            feats["target_Vy"] = 0.0
+            feats["target_Wz"] = abs(hr["Wz"])
+            feats["target_glide_ratio"] = feats["target_Vx"] / feats["target_Vz"] if feats["target_Vz"] > 1e-6 else 0.0
+            feats["source"] = "harvested_highres"
+            feats["shape_class"] = hr["shape"]
+            records.append(feats)
+
     print(f"Successfully harvested {len(records)} verified simulation data points across all shapes.")
     return records
 
