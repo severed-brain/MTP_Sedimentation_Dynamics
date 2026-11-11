@@ -32,3 +32,4 @@ Thumbs.db
 # Scratch / agent temporary files
 scratch/
 *.git_backup*
+final/
